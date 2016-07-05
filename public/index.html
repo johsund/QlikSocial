@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>QlikSocial</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="dist/css/qliksocial.css" rel="stylesheet">
+	
+	<link href="dist/css/awesome-bootstrap-checkbox.css" rel="stylesheet">
+   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+	<link href="font-awesome-4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <!--<link href="theme.css" rel="stylesheet">-->
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="assets/js/ie-emulation-modes-warning.js"></script>
+	
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document" id="body">
+
+    <!-- Fixed navbar -->
+	<!--
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Bootstrap theme</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+	-->
+
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <!--<div class="jumbotron" style="padding:10px; background-image:linear-gradient(to bottom,#9FD888 0,#8FBF7C 100%);">
+        <p style="font-size:40px;font-weight:500;color:#ffffff"><img src="images\QlikSocialLogo-small.png">QlikSocial</p>
+      </div>-->
+
+		<div class="row">
+			<div class="col-md-12" style="padding:15px 0px 0px 0px;">
+
+				<div class="page-header" style="border-bottom:0px;display:block-inline;opacity:0.8;margin-top:10px;">
+					
+					<h1 style="background-color:#5cb85c;padding:0px 0px 0px 0px;margin:0px 0px 0px 0px;opacity:1;">
+					<img src="images\QlikSocialLogo-small.png" style="align:left;opacity:1;padding-left:15px;">
+						<span style="opacity:1;color:#fff;padding-right:45px;">QlikSocial</span>
+					</h1>
+				</div>
+			</div>
+		</div>
+
+      <div class="page-header">
+        <h3>1. Pick social media platform(s)</h3> 
+      </div>
+	  
+		<div class="row">
+		<div class="col-sm-4">
+		  <div id="panelTwitter" class="panel panel-default">
+			<div class="panel-heading">
+				<div>
+					<h3 class="panel-title"><b>Twitter</b></h3>
+				</div>
+			</div>
+			<div class="panel-body">
+				<button id="buttonTwitter" type="checkbox" style="width:30px;height:30px;"><i id="checkTwitter" class="fa fa-check hidden" aria-hidden="true"></i></button> <span id="twitterSelected" class="hidden"> Pick number of search pages to return</span>
+				<p><div id="sliderPages" style="margin-top:35px;" class="hidden"></div></p>
+				<button id="buttonTwitterLocal" type="checkbox" style="width:30px;height:30px;" class="hidden"><i id="checkTwitterLocal" class="fa fa-check hidden" aria-hidden="true"></i></button> <span id="twitterSelectedLocal" class="hidden"> Return only local tweets</span>
+			</div>
+		  </div>
+	    </div>
+		<div class="col-sm-4" style="opacity:1;">
+		  <div id="panelReddit" class="panel panel-default">
+			<div class="panel-heading">
+				<div>
+					<h3 class="panel-title"><b>Reddit</b></h3>
+				</div>
+			</div>
+			<div class="panel-body">
+				<button id="buttonReddit" type="checkbox" style="width:30px;height:30px;"><i id="checkReddit" class="fa fa-check hidden" aria-hidden="true"></i></button>
+			</div>
+		  </div>
+	    </div>
+		<div class="col-sm-4" style="opacity:0.3;">
+		  <div id="panelLinkedIn" class="panel panel-default">
+			<div class="panel-heading">
+				<div>
+					<h3 class="panel-title"><b>LinkedIn</b></h3>
+				</div>
+			</div>
+			<div class="panel-body">
+				<button id="buttonLinkedIn" type="checkbox" style="width:30px;height:30px;"><i id="checkLinkedIn" class="fa fa-check hidden" aria-hidden="true"></i></button>
+			</div>
+		  </div>
+	    </div>	
+		</div><!-- /.col-sm-4 -->
+
+	<div class="container">
+		<div class="row">
+			<h3>2. Search keyword(s)</h3>
+			   <!--<div id="custom-search-input">-->
+					<div class="input-group col-md-11" style="float:left;">
+						<input type="text" class="search-query form-control" placeholder="Search" id="searchObject"/>
+						<!--<span class="input-group-btn">
+							<button class="btn btn-danger" type="button" id="searchbutton">
+								<span class=" glyphicon glyphicon-search"></span>
+							</button>
+						</span>-->
+					</div>
+					<div>
+						<button type="button" class="btn btn btn-success" id="searchButton">Search</button>
+					</div>
+				<!--</div>-->
+			<h3> or select an earlier search</h3>
+			        <div class="col-sm-6" style="margin-left:-15px;border:0px;">
+					  <div class="list-group" id="previous-searches" style="border:0px;box-shadow:0 0px 0px;">
+						<!--<a href="#" class="list-group-item active">
+						  Cras justo odio
+						</a>-->
+
+					  </div>
+					</div>
+		</div>
+	</div>	
+	
+	<!--<div class="container">
+		<div class="row">
+				<div><p><button type="button" class="btn btn-sm btn-primary" id="createNewApp">Create new app</button></p></div>
+		</div>
+	</div>-->
+		
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!--<script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>-->
+    <script src="dist/js/bootstrap.min.js"></script>
+    <script src="assets/js/docs.min.js"></script>
+	
+	<script src="js/qsocks.bundle.js"></script>
+	<script src="js/fs/index.js"></script>
+	
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+	<script src="js/require.js"></script>
+	<script src="js/app.js"></script>
+	<script src="config.js"></script>
+	
+<!-- 	<script>
+	  var qlikticket = {{ qlikticket }};
+	  console.log(qlikticket);
+	</script> -->
+	
+  </body>
+</html>

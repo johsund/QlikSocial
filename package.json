@@ -1,0 +1,15 @@
+{
+  "name": "qliksocial",
+  "version": "1.0.0",
+  "description": "QIX based solution for analyzing twitter searches",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "snoowrap": "^1.2.0"
+  }
+}

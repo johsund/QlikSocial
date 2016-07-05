@@ -1,0 +1,9 @@
+{
+    "name": "QlikSocial",
+    "type": "mashup",
+    "appdata": {
+        "qDocName": "",
+        "qDocId": ""
+    },
+    "allowPosition": true
+}
