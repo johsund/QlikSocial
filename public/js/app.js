@@ -188,7 +188,7 @@ function create(global) {
 		
 		connectionTwitter = {
 			qName: 'QlikSocial Twitter' + ' ' + Date.now(),
-			qConnectionString: 'http://localhost:5555/QVSource/TwitterConnectorV2/?table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&lang=en&smaxNoPages='+$("#tooltip").text()+'&appID=',
+			qConnectionString: 'http://localhost:5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&lang=en&smaxNoPages='+$("#tooltip").text()+'&appID=',
 			qType: 'internet'
 		};	
 		loadscript += appendTwitter(loadscript);		
@@ -199,7 +199,7 @@ function create(global) {
 		
 		connectionReddit = {
 			qName: 'QlikSocial Reddit' + ' ' + Date.now(),
-			qConnectionString: 'http://localhost:5555/QVSource/WebConnectorV2/?table=JsonToXmlRaw&url=http%3a%2f%2fwww.reddit.com%2fsearch.json%3fq%3d' + $("#searchObject").val().split(' ').join('+') + '%26sort%3drelevance%26limit%3d100&appID=',
+			qConnectionString: 'http://localhost:5555/data?connectorID=WebConnector&table=JsonToXmlRaw&url=http%3a%2f%2fwww.reddit.com%2fsearch.json%3fq%3d' + $("#searchObject").val().split(' ').join('+') + '%26sort%3drelevance%26limit%3d100&appID=',
 			qType: 'internet'
 		};		
 		loadscript += appendReddit(loadscript);		
