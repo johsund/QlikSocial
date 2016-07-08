@@ -52,19 +52,29 @@ console.log(config);
   
  var newAppId;
   
-// var geoLoc = navigator.geolocation.getCurrentPosition(showPosition);
-// function showPosition(position) {
-	// console.log(position);  
-	// return position;
-// }
+var geoLoc; 
 
+navigator.geolocation.getCurrentPosition(showPosition);
+function showPosition(position) {
+	//console.log(position);  
+	//return position;
+	geoLoc = position;
+}
+//console.log(navigator.geolocation.getCurrentPosition(showPosition));
 
   
 var tooltip = $('<div id="tooltip" style="color:#3c763d" class="hidden"/>').css({
     position: 'absolute',
     top: -25,
     left: 3
-});//.hide();
+});
+
+var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
+    position: 'absolute',
+    top: -25,
+    left: -5
+});
+//.hide();
   
       $( "#sliderPages" ).slider({
       orientation: "horizontal",
@@ -85,6 +95,27 @@ var tooltip = $('<div id="tooltip" style="color:#3c763d" class="hidden"/>').css(
 	
 	//$( "#sliderPages" ).css('background', 'rgb(0,255,0)');
 	$( "#sliderPages .ui-slider-range" ).css('background', '#D0E9C6');
+	
+      $( "#sliderRange" ).slider({
+      orientation: "horizontal",
+      range: "min",
+      min: 10,
+      max: 1000,
+      value: 100,
+	  step: 10,
+      slide: function( event, ui ) {
+        tooltipRange.text(ui.value);
+		//console.log($("#tooltip").text());
+      },
+    change: function(event, ui) {}
+	}).find(".ui-slider-handle").append(tooltipRange).hover(function() {
+		//tooltip.show()
+	}, function() {
+		//tooltip.hide()
+	});
+	
+	//$( "#sliderPages" ).css('background', 'rgb(0,255,0)');
+	$( "#sliderRange .ui-slider-range" ).css('background', '#D0E9C6');	
   
   qsocks.Connect(config).then(function(global) {
     console.log(global);
@@ -147,10 +178,17 @@ function create(global) {
 	
 	if($("#buttonTwitter").attr('checked')) {
 		sourceCounter += 1;
+		var localTweets ='';
+		
+		if($("#buttonTwitterLocal").attr('checked')) {
+			//console.log(geoLoc)
+			localTweets = '&geocode=' + geoLoc.coords.latitude + ',' + geoLoc.coords.longitude + ',' + $("#tooltipRange").text() + 'mi&result_type=mixed';
+			console.log(localTweets);
+		}
 		
 		connectionTwitter = {
 			qName: 'QlikSocial Twitter' + ' ' + Date.now(),
-			qConnectionString: 'http://localhost:5555/QVSource/TwitterConnectorV2/?table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + '&count=100&lang=en&smaxNoPages='+$("#tooltip").text()+'&appID=',
+			qConnectionString: 'http://localhost:5555/QVSource/TwitterConnectorV2/?table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&lang=en&smaxNoPages='+$("#tooltip").text()+'&appID=',
 			qType: 'internet'
 		};	
 		loadscript += appendTwitter(loadscript);		
@@ -515,7 +553,19 @@ function appendReddit(loadscript) {
 		$("#twitterSelected").toggleClass("hidden");
 		$("#sliderPages").toggleClass("hidden");
 		$("#tooltip").toggleClass("hidden");
+		$("#buttonTwitterLocal").toggleClass("hidden");
+		$("#twitterSelectedLocal").toggleClass("hidden");
+		$("#sliderRange").toggleClass("hidden");		
 		$("#panelTwitter").toggleClass("panel-success");
+	});
+	$("#buttonTwitterLocal").click(function() {
+		if ($("#buttonTwitterLocal").attr('checked')) {
+			$("#buttonTwitterLocal").removeAttr('checked');
+		} else {
+			$("#buttonTwitterLocal").attr('checked', 'checked');
+		}			
+		$("#checkTwitterLocal").toggleClass("hidden");
+		//console.log(geoLoc);
 	});
 	$("#buttonReddit").click(function() {
 		if ($("#buttonReddit").attr('checked')) {
