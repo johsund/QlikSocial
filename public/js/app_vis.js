@@ -122,7 +122,7 @@ global.getDocList().then(function(docList) {
 		}], {
 		  'label': ' ',
 		  'value': 'count(distinct Search_user_id)'
-		}, document.getElementById('chartfive'));
+		}, document.getElementById('chartfive'), 'dim');
 		
 		var chartsix= new Table([{
 		  'dim': '=if(len(Search_first_user_mention)<>0,Search_first_user_mention)',
@@ -158,8 +158,20 @@ global.getDocList().then(function(docList) {
  * Dimension, Inline Bar Chart, Value
  */
 
-function Table(dimensions, expression, element) {
+function Table(dimensions, expression, element, sorting) {
 
+	var sort, interSortOrder;
+	interSortOrder = [1,0]; //sort by measure first by default
+	if (typeof sorting === 'undefined') { sort = {
+					"qSortByNumeric": -1
+				}; }
+
+	if (sorting === 'dim') {sort = {
+    "qSortByAscii": 1
+  };
+  interSortOrder = [0,1]}; //if sorting parameter is set to 'dim' then sort by dimension before measure
+  
+		
 	//console.log("table fired");
 	var cube, max;
 
@@ -169,9 +181,7 @@ function Table(dimensions, expression, element) {
 			"qDef": {
 				"qFieldDefs": [d.dim],
 				"qFieldLabels": [d.label],
-				"qSortCriterias": [{
-					"qSortByNumeric": -1
-				}]
+				"qSortCriterias": [sort]
 			}
 		}
 	});
@@ -193,6 +203,7 @@ function Table(dimensions, expression, element) {
 			"qMeasures": [{
 				"qLibraryId": "",
 				"qSortBy": {
+					//"qSortByAscii":-1
 					"qSortByNumeric": -1
 				},
 				"qDef": {
@@ -203,7 +214,7 @@ function Table(dimensions, expression, element) {
 			}],
 			"qSuppressMissing": true,
 			"qSuppressZero": true,
-			"qInterColumnSortOrder": [1, 0],
+			"qInterColumnSortOrder": interSortOrder,//[1, 0],
 			"qInitialDataFetch": [{
 				qTop: 0,
 				qLeft: 0,
