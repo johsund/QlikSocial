@@ -35,7 +35,8 @@ Social Media on demand app generator for Qlik Sense
           
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/jsConfig.png)
 
-      * In the "public" folder, open __app.js__ and __app_vis.js__ and edit the following
+###### TEST
+      * In the __public__ folder, open __app.js__ and __app_vis.js__ and edit the following
           * qlikHost (both files)
           * qlikVirtualProxy (both files) 
           * qlikWebConnectorHost (app.js)
