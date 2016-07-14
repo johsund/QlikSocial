@@ -129,6 +129,7 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 		global.getDocList().then(function(docList) {
 			docList.forEach(function(doc) {
 				if(doc.qDocName.substring(0,10)=='QlikSocial') {
+					//console.log(doc);
 					//console.log(doc.qDocName.substring(11, doc.qDocName.length-11))
 					$("#previous-searches").append('<div border="0px"><div style="display:inline-block;width:90%;"><a href="#" style="padding: 0px 15px;" class="list-group-item" id="' + doc.qDocId + '"><h4>' + doc.qDocName.substring(11, doc.qDocName.indexOf('-201')) + '</h4><h6>'+doc.qDocName.substring(doc.qDocName.length - 10)+'</h5></a></div><div style="display:inline-block;float:right;padding-top:20px;"><i class="fa fa-trash-o fa-2" id="'+ 'del_' + doc.qDocId +'" aria-hidden="true" style="display:inline;padding:0px;font-size:20px;cursor:pointer;"></i></div></div>');
 					$("#"+doc.qDocId).hover(function() {

@@ -6,7 +6,7 @@ var qsocks = require('qsocks');
 var fs = require('fs');
 var request = require('request');
 
-var config = require('./public/config');
+var config = require('./config');
 
 app.use(express.static('public'));
 
