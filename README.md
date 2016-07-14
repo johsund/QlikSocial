@@ -10,7 +10,7 @@ Social Media on demand app generator for Qlik Sense
   * Download QlikSocial zip and unzip to directory of choice
 
 ## Configuration
-  ### Export Certificate
+  * Export Certificate
       * Go to Qlik Sense __QMC > Certificates__
       * Add machine name of your machine hosting QlikSocial
       * Export in __Windows format__
@@ -19,14 +19,14 @@ Social Media on demand app generator for Qlik Sense
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/exportCerts.png)
   
 
-  ### Create Virtual Proxy
+  * Create Virtual Proxy
       * Go to Qlik Sense __QMC > Virtual Proxies__
       * Create a virtual proxy that uses Ticket authentication
       
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/virtualProxy.png)
       
 
-  ### Configure QlikSocial
+  * Configure QlikSocial
       * In QlikSocial root, open __config.js__ and update paths
           * host
           * virtualproxy
@@ -43,7 +43,7 @@ Social Media on demand app generator for Qlik Sense
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/jsConfig2.png)
           
           
-  ### QlikWebConnector
+  * QlikWebConnector
       * Start QlikWebConnector and configure access to Twitter (login with Twitter account)
 
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/configureTwitter.png)
