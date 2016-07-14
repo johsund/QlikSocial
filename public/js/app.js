@@ -1,8 +1,5 @@
-
 require( ['jquery'], function ( $ ) {
 
-//console.log(config);
-//console.log(myConfig.config.qlik.hostname);
 var qlikHost = 'sgsin-jsn1.qliktech.com';
 var qlikVirtualProxy = 'ticket';
 var qlikWebConnectorHost = 'localhost';
