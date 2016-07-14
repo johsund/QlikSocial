@@ -1,8 +1,14 @@
 # QlikSocial
-Social Media on demand app generator for Qlik Sense
-![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialAnalyze.png)
+QlikSocial helps you create on demand analytics applications based on social media sources. The data is visualized and searchable to help sift through the comments and understand what is being said around a specific topic. QlikSocial allows you to take and store snapshots in time of topics and keep these apps for future access, for example around events, product launches etc.
+
+Here's a youtube video that walks through the application and demonstrates how it can be used:
+https://www.youtube.com/watch?v=33XhaIwRrhI
+
+[![IMAGE ALT TEXT](https://img.youtube.com/vi/33XhaIwRrhI/0.jpg)](https://www.youtube.com/watch?v=33XhaIwRrhI "QlikSocial")
 
 # Installation & Setup
+
+![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialAnalyze.png)
 
 ## Prerequisities
   * Install NodeJS - https://nodejs.org/en/download/
