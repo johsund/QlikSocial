@@ -51,47 +51,46 @@ function getTicket(req, res, next) {
 	);
 };	
 
-function removeApp(req, res, next) {
+// function removeApp(req, res, next) {
 	
-	var https = require('https');
+	// var https = require('https');
 	
-	var certPath = config.qlik.certificatepath;
+	// var certPath = config.qlik.certificatepath;
 	
-	var app = req.query.app;
-	req.qlikTicket = (req.headers.referer.substr(req.headers.referer.length-16));
+	// var app = req.query.app;
+	// req.qlikTicket = (req.headers.referer.substr(req.headers.referer.length-16));
 	
-	var options = {
-	   hostname: config.qlik.hostname,
-	   port: 4242,
-	   path: '/qrs/app/'+ app +'?xrfkey=abcdefghijklmnop',
-	   method: 'DELETE',
-	   headers: {
-		  'x-qlik-xrfkey' : 'abcdefghijklmnop',
-		  'X-Qlik-User' : 'UserDirectory= Internal; UserId= sa_repository '
-	   },
-	   //pfx: fs.readFileSync(__dirname + '\\client.pfx')
-	   key: fs.readFileSync(certPath + "client_key.pem"),
-	   cert: fs.readFileSync(certPath + "client.pem"),
-	   ca: fs.readFileSync(certPath + "root.pem")
-	};
+	// var options = {
+	   // hostname: config.qlik.hostname,
+	   // port: 4242,
+	   // path: '/qrs/app/'+ app +'?xrfkey=abcdefghijklmnop',
+	   // method: 'DELETE',
+	   // headers: {
+		  // 'x-qlik-xrfkey' : 'abcdefghijklmnop',
+		  // 'X-Qlik-User' : 'UserDirectory= Internal; UserId= sa_repository'
+	   // },
+	   // key: fs.readFileSync(certPath + "client_key.pem"),
+	   // cert: fs.readFileSync(certPath + "client.pem"),
+	   // ca: fs.readFileSync(certPath + "root.pem")
+	// };
 
-	https.get(options, function(res) {
-	   console.log("Got response: " + res.statusCode);
-	   res.on("data", function(chunk) {
-		  console.log("BODY: " + chunk);  
-	   });
-	   }).on('error', function(e) {
-		  console.log("Got error: " + e.message);
-	});
+	// https.get(options, function(res) {
+	   // console.log("Got response: " + res.statusCode);
+	   // res.on("data", function(chunk) {
+		  // console.log("BODY: " + chunk);  
+	   // });
+	   // }).on('error', function(e) {
+		  // console.log("Got error: " + e.message);
+	// });
 	
-	next();	
+	// next();	
 	
-};
+// };
 
 app.get('/auth', getTicket, function(req, res) {
   res.redirect('/?qlikTicket=' + req.qlikTicket)
 });
 
-app.get('/remove', removeApp, function(req, res) {
-  res.redirect('/?qlikTicket=' + req.qlikTicket);
-});
+// app.get('/remove', removeApp, function(req, res) {
+  // res.redirect('/?qlikTicket=' + req.qlikTicket);
+// });

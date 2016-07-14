@@ -1,10 +1,11 @@
 
-require( ['jquery', 'config'], function ( $, config ) {
+require( ['jquery'], function ( $ ) {
 
-console.log(config);
+//console.log(config);
 //console.log(myConfig.config.qlik.hostname);
 var qlikHost = 'sgsin-jsn1.qliktech.com';
 var qlikVirtualProxy = 'ticket';
+var qlikWebConnectorHost = 'localhost';
 
 var qsTicket;
 
@@ -23,7 +24,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };
 
-console.log(getUrlParameter('qlikTicket'));
+//console.log(getUrlParameter('qlikTicket'));
 if(getUrlParameter('qlikTicket') == undefined)
  {
 	 window.location.href = window.location.protocol + '//' + window.location.host + '/auth';
@@ -48,7 +49,7 @@ if(getUrlParameter('qlikTicket') == undefined)
     isSecure: true
   };
 
-console.log(config);
+//console.log(config);
   
  var newAppId;
   
@@ -118,36 +119,49 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 	$( "#sliderRange .ui-slider-range" ).css('background', '#D0E9C6');	
   
   qsocks.Connect(config).then(function(global) {
-    console.log(global);
-	global.getDocList().then(function(docList) {
-		docList.forEach(function(doc) {
-			if(doc.qDocName.substring(0,10)=='QlikSocial') {
-				console.log(doc.qDocName.substring(11, doc.qDocName.length-11))
-				$("#previous-searches").append('<div border="0px"><div style="display:inline-block;width:90%;"><a href="#" class="list-group-item" id="' + doc.qDocId + '">' + doc.qDocName.substring(11, doc.qDocName.length) + '</a></div><div style="display:inline-block;float:right;padding:10px; padding-right:25px;"><i class="fa fa-trash-o fa-2" id="'+ 'del_' + doc.qDocId +'" aria-hidden="true" style="display:inline;padding:0px;font-size:20px;cursor:pointer;"></i></div></div>');
-				$("#"+doc.qDocId).hover(function() {
-					//console.log(doc.qDocId + " hover");
-					$("#"+doc.qDocId).addClass("list-group-item-success");
-				},
-				function (){
-					//console.log(doc.qDocId + " end hover");
-					$("#"+doc.qDocId).removeClass("list-group-item-success");
-				});
-				$("#"+doc.qDocId).click(function() {
-					//console.log(this.id);
-					$(".container").remove();
-					window.location = '/analytics.html?app='+doc.qDocId;
-				});
-				$("#del_"+doc.qDocId).click(function() {
-					console.log(this.id);
-					window.location ='/remove?app='+doc.qDocId;
-				});
-			}
-		});
-	});
+    //console.log(global);
+
+	refreshAppList(global);
+	
+	function refreshAppList(global){
+		console.log("Refreshing app list");
+		$("#previous-searches").empty();
+		global.getDocList().then(function(docList) {
+			docList.forEach(function(doc) {
+				if(doc.qDocName.substring(0,10)=='QlikSocial') {
+					//console.log(doc.qDocName.substring(11, doc.qDocName.length-11))
+					$("#previous-searches").append('<div border="0px"><div style="display:inline-block;width:90%;"><a href="#" class="list-group-item" id="' + doc.qDocId + '">' + doc.qDocName.substring(11, doc.qDocName.length) + '</a></div><div style="display:inline-block;float:right;padding:10px; padding-right:25px;"><i class="fa fa-trash-o fa-2" id="'+ 'del_' + doc.qDocId +'" aria-hidden="true" style="display:inline;padding:0px;font-size:20px;cursor:pointer;"></i></div></div>');
+					$("#"+doc.qDocId).hover(function() {
+						//console.log(doc.qDocId + " hover");
+						$("#"+doc.qDocId).addClass("list-group-item-success");
+					},
+					function (){
+						//console.log(doc.qDocId + " end hover");
+						$("#"+doc.qDocId).removeClass("list-group-item-success");
+					});
+					$("#"+doc.qDocId).click(function() {
+						//console.log(this.id);
+						$(".container").remove();
+						window.location = '/analytics.html?app='+doc.qDocId;
+					});
+					$("#del_"+doc.qDocId).click(function() {
+						console.log(this.id);
+						//window.location ='/remove?app='+doc.qDocId;
+						global.deleteApp(doc.qDocId).then(sleep(200)).then(refreshAppList(global)); //delete app, wait for done, then refresh app list
+						console.log("deleted");
+						//refreshAppList(global);
+					});
+				}
+			});
+		});	
+	}
+
+	
 	$("#searchButton").click(function() {
 
 		create(global);
 	});	
+	
   });
   
 function create(global) {
@@ -160,7 +174,7 @@ function create(global) {
 	var datestr = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toJSON().slice(0, 10)
 	var appname = 'QlikSocial' + '-' + $("#searchObject").val() + '-' + datestr;
 	
-	console.log('&maxNoPages='+$("#tooltip").text()+'&appID=');
+	//console.log('&maxNoPages='+$("#tooltip").text()+'&appID=');
 	
 
 
@@ -183,33 +197,33 @@ function create(global) {
 		if($("#buttonTwitterLocal").attr('checked')) {
 			//console.log(geoLoc)
 			localTweets = '&geocode=' + geoLoc.coords.latitude + ',' + geoLoc.coords.longitude + ',' + $("#tooltipRange").text() + 'mi&result_type=mixed';
-			console.log(localTweets);
+			//console.log(localTweets);
 		}
 		
 		connectionTwitter = {
 			qName: 'QlikSocial Twitter' + ' ' + Date.now(),
-			qConnectionString: 'http://localhost:5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&lang=en&smaxNoPages='+$("#tooltip").text()+'&appID=',
+			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&lang=en&smaxNoPages='+$("#tooltip").text()+'&appID=',
 			qType: 'internet'
 		};	
 		loadscript += appendTwitter(loadscript);		
-		console.log(connectionTwitter);
+		//console.log(connectionTwitter);
 		}
 	if($("#buttonReddit").attr('checked')) {
 		sourceCounter += 1;
 		
 		connectionReddit = {
 			qName: 'QlikSocial Reddit' + ' ' + Date.now(),
-			qConnectionString: 'http://localhost:5555/data?connectorID=WebConnector&table=JsonToXmlRaw&url=http%3a%2f%2fwww.reddit.com%2fsearch.json%3fq%3d' + $("#searchObject").val().split(' ').join('+') + '%26sort%3drelevance%26limit%3d100&appID=',
+			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=WebConnector&table=JsonToXmlRaw&url=http%3a%2f%2fwww.reddit.com%2fsearch.json%3fq%3d' + $("#searchObject").val().split(' ').join('+') + '%26sort%3drelevance%26limit%3d100&appID=',
 			qType: 'internet'
 		};		
 		loadscript += appendReddit(loadscript);		
-		console.log(connectionReddit);
+		//console.log(connectionReddit);
 		}
 	//if(sourceCounter>1) {
 		$(".container").fadeTo( "slow" , 0.5, function() {
 		// Animation complete.
 		});
-		console.log("Twitter checked");
+		//console.log("Twitter checked");
 	
 	$(document.getElementById('body')).append('<div id="qlikProgress" class="qlikProgress" style="width:350px; height:220px;opacity:1;"></div>');
 	$(document.getElementById('qlikProgress')).append('<div style="height:20px;background-color:#eeeeee;margin-bottom:10px;" id="progressBox"><div class="progress-bar progress-bar-success" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 10%;background-image:linear-gradient(to bottom,#9FD888 0,#8FBF7C 100%);"><span class="sr-only">10% Complete</span></div></div>');
@@ -221,11 +235,11 @@ function create(global) {
 		.then(createConnectionTwitter)
 		//.then(createConnectionReddit)
 		.then(getSetScript)
-		.then(sleep(500))
+		.then(sleep(100))
 		.then(reload)
-		.then(sleep(500))
+		.then(sleep(100))
 		.then(save)
-		.then(sleep(500))
+		.then(sleep(100))
 		.then(function() {
 			console.log("App Created");
 			// port.postMessage({
@@ -261,7 +275,7 @@ function createAndOpen(global, appname) {
 	$(document.getElementById('qlikProgress')).append('<p>- Creating App</p>');
 	$(document.getElementById('progressBar')).width('10%');
 	
-	console.log(global, appname);
+	//console.log(global, appname);
 	//if(settings.useServer === true) {
 		return new Promise(function(resolve, reject) {
 			global.createApp(appname).then(function(reply) {
@@ -302,7 +316,7 @@ function createAndOpen(global, appname) {
 
 function createConnectionTwitter(handle) {
 	if($("#buttonTwitter").attr('checked')) {
-		console.log(handle);
+		//console.log(handle);
 		$(document.getElementById('qlikProgress')).append('<p>- Creating Data Connection(s)</p>');
 		$(document.getElementById('progressBar')).width('20%');
 		return new Promise(function(resolve, reject) {
@@ -340,8 +354,8 @@ function createConnectionTwitter(handle) {
 // };
 
 function getSetScript(handle) {
-	console.log(handle);
-	console.log(loadscript);
+	//console.log(handle);
+	//console.log(loadscript);
 	$(document.getElementById('qlikProgress')).append('<p>- Setting Load Script</p>');
 	$(document.getElementById('progressBar')).width('40%');
 	return new Promise(function(resolve, reject) {
@@ -357,7 +371,7 @@ function getSetScript(handle) {
 };
 
 function save(handle) {
-	console.log(handle);
+	//console.log(handle);
 	$(document.getElementById('qlikProgress')).append('<p>- Saving Application</p>');
 	$(document.getElementById('progressBar')).width('100%');
 	return new Promise(function(resolve, reject) {
@@ -370,7 +384,7 @@ function save(handle) {
 };
 
 function reload(handle) {
-	console.log(handle);
+	//console.log(handle);
 	$(document.getElementById('qlikProgress')).append('<p>- Reload Application</p>');
 	$(document.getElementById('progressBar')).width('70%');
 	return new Promise(function(resolve, reject) {
@@ -381,7 +395,7 @@ function reload(handle) {
 };
 
 function buildUI(handle) {
-	console.log(handle);
+	//console.log(handle);
 	$(".container").remove();
 	$("#qlikProgress").remove();
 	//console.log(newAppId);
@@ -462,7 +476,7 @@ function appendTwitter(loadscript) {
 	loadscript += "\r\n    user_is_translator as Search_user_is_translator,";
 	loadscript += "\r\n    user_name as UserName,";
 	loadscript += "\r\n    user_notifications as Search_user_notifications";
-	loadscript += "\r\nFROM [lib://" + connectionTwitter.qName + "] (qvx);";
+	loadscript += "\r\nFROM [lib://" + connectionTwitter.qName + "] (qvx) where possibly_sensitive='false';";
 	
 	return loadscript;
 }
@@ -583,44 +597,6 @@ function appendReddit(loadscript) {
 		$("#checkLinkedIn").toggleClass("hidden");
 		$("#panelLinkedIn").toggleClass("panel-success");
 	});	
-
-	// $("#searchbutton").click(function() {
-			
-			// var cb = new Codebird;
-			
-			// cb.setConsumerKey("sqOTKYsp9k5pkq6tvLZ8LJD3F", "tZZeQcESkeaCicjgoowgFmPZge2iE0yHy5F9FqmM2ulJP2viam");
-			
-			// cb.setToken("727799023311130624-zng6QgQfVmCLfSVQwWwRCRq31fySt6v", "Q2uN933u9IbLKcEHA0HIZq0FNn5ENOSsc0LivWrRypWjL");
-			
-			// console.log(cb);
-
-			// cb.__call(
-				// "oauth2_token",
-				// {},
-				// function (reply, err) {
-					// var bearer_token;
-					// if (err) {
-						// console.log("error response or timeout exceeded" + err.error);
-					// }
-					// if (reply) {
-						// bearer_token = reply.access_token;
-						// console.log(bearer_token);
-					// }
-				// }
-			// ).then($("#twitterSuccess").toggleClass("hidden"));
-			
-			
-			
-		// cb.__call(
-			// "search_tweets",
-			// "q="+ $("#searchObject").val() + "&count=100",
-			// function (reply) {
-				// console.log(reply);
-			// },
-			// true // this parameter required
-		// );
-	// });
-	
 
 		 
 } );

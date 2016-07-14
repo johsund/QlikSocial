@@ -688,7 +688,7 @@ function D3Bar(dimensions, expression, element) {
 	//console.log("D3Bar fired");
 	var cube, max;
 	
-	console.log(expression);
+	//console.log(expression);
 
 	var dimensionList = dimensions.map(function(d) {
 		return {
@@ -777,7 +777,7 @@ function D3Bar(dimensions, expression, element) {
 				}
 			})
 			
-			console.log(data);
+			//console.log(data);
 
 			//var calcWidth = layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : layout.qHyperCube.qDataPages[0].qMatrix.length*30;
 
@@ -892,7 +892,7 @@ function D3Bar(dimensions, expression, element) {
 				  .on("draw",lasso_draw) // lasso draw function
 				  .on("end",lasso_end); // lasso end function
 
-			console.log(lasso);	  
+			//console.log(lasso);	  
 				  
 			//Init the lasso on the svg:g that contains the dots
 			//console.log(svg);

@@ -7,7 +7,7 @@ config.qlik.hostname = 'sgsin-jsn1.qliktech.com';
 config.qlik.virtualproxy = 'ticket';
 config.qlik.userdirectory = 'QTSEL';
 config.qlik.username = 'qliksocial';
-config.qlik.certificatepath = 'C:\\ProgramData\\Qlik\\Sense\\Repository\\Exported Certificates\\.Local Certificates\\';
+config.qlik.certificatepath = '';
 
 
 module.exports = config;
