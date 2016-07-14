@@ -68,3 +68,7 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
   * Go to __http://localhost:3000__
   
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialStart.png)
+
+# Acknowledgements
+Thanks to @mindspank ([@Mindspank](https://github.com/mindspank)) for qSocks and projects like Sense-It & Diplomatic Pulse.
+Thanks to 
