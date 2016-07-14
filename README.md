@@ -70,5 +70,6 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialStart.png)
 
 # Acknowledgements
-Thanks to @mindspank ([@Mindspank](https://github.com/mindspank)) for qSocks and projects like Sense-It & Diplomatic Pulse.
-Thanks to 
+Thanks to Alex Karlsson ([@Mindspank](https://github.com/mindspank)) for qSocks and projects like Sense-It & Diplomatic Pulse.
+Thanks to Nick Webster ([@websy85](https://github.com/websy85)) for the sense-search-components.
+Thanks to Speros Kokenes ([@skokenes](https://github.com/skokenes)) for the D3-lasso-plugin.
