@@ -33,7 +33,7 @@ function getTicket(req, res, next) {
 
 //  Get ticket for user - refer to the QPS API documentation for more information on different authentication methods.
 	r.post({
-	  uri: 'https://sgsin-jsn1.qliktech.com:4243/qps/'+config.qlik.virtualproxy+'/ticket?xrfkey=abcdefghijklmnop',
+	  uri: 'https://'+config.qlik.hostname+':4243/qps/'+config.qlik.virtualproxy+'/ticket?xrfkey=abcdefghijklmnop',
 	  body: b,
 	  headers: {
 		'x-qlik-xrfkey': 'abcdefghijklmnop',
