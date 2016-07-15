@@ -16,7 +16,7 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
 
 ## Prerequisities
   * Install __NodeJS__ - https://nodejs.org/en/download/
-  * Install __QlikWebConnectors__ and license the product
+  * Install __QlikWebConnectors__ from the Qlik download page and license the product
   * Download __QlikSocial__ zip and unzip to directory of choice
 
 ## Configuration
