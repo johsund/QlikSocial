@@ -15,9 +15,9 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialAnalyze.png)
 
 ## Prerequisities
-  * Install NodeJS - https://nodejs.org/en/download/
-  * Install QlikWebConnectors
-  * Download QlikSocial zip and unzip to directory of choice
+  * Install __NodeJS__ - https://nodejs.org/en/download/
+  * Install __QlikWebConnectors__ and license the product
+  * Download __QlikSocial__ zip and unzip to directory of choice
 
 ## Configuration
   * Export Certificate
