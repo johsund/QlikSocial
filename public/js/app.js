@@ -200,7 +200,7 @@ function create(global) {
 		
 		connectionTwitter = {
 			qName: 'QlikSocial Twitter' + ' ' + Date.now(),
-			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&lang=en&smaxNoPages='+$("#tooltip").text()+'&appID=',
+			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&maxNoPages='+$("#tooltip").text()+'&appID=',
 			qType: 'internet'
 		};	
 		loadscript += appendTwitter(loadscript);		

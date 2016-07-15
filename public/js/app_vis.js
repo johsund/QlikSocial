@@ -148,6 +148,7 @@ global.getDocList().then(function(docList) {
 		var user = new Filter('Search_user_screen_name', 'User Name', document.getElementById('filterPane'));
 		var hashtag = new Filter('Search_first_hash_tag', 'Hash Tag', document.getElementById('filterPane'));
 		var datasource = new Filter('datasource', 'Web Source', document.getElementById('filterPane'));
+		var language = new Filter('Search_lang', 'Language', document.getElementById('filterPane'));
 		//var usergeo = new MapUsers('Search_user_location', 'User Location', 'count(distinct Search_id)', document.getElementById('chartseven'));
 		
 		var contenttable = new ContentTable(['datasource', 'Search_user_name', 'Search_created_at_timestamp', 'Search_text', 'Search_user_screen_name', 'Search_id', 'Search_favorite_count', 'Search_retweet_count', 'Search_first_media_photo_url'], $('twitterFeed'));
