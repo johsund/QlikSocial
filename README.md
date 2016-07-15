@@ -47,9 +47,9 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
 
 
   * In the __public__ folder inside the QlikSocial root, open __app.js__ and __app_vis.js__ and edit the following
-      * qlikHost (both files)
-      * qlikVirtualProxy (both files) 
-      * qlikWebConnectorHost (app.js)
+      * qlikHost (__app.js__ and __app_vis.js__)
+      * qlikVirtualProxy (__app.js__ and __app_vis.js__) 
+      * qlikWebConnectorHost (__app.js__)
           
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/jsConfig2.png)
           
