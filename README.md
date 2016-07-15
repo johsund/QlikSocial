@@ -3,6 +3,8 @@ QlikSocial helps you create on demand analytics applications based on social med
 
 QlikSocial is developed using Qlik Sense 3.0 and leveraging the Engine API with custom data visualizations.
 
+QlikSocial should be used with __Qlik Sense Enterprise Server only__, i.e. no Qlik Sense Desktop.
+
 Here's a youtube video that walks through the application and demonstrates how it can be used:
 https://www.youtube.com/watch?v=33XhaIwRrhI
 
