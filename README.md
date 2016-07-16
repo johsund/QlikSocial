@@ -32,6 +32,7 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
   * Create Virtual Proxy
       * Go to Qlik Sense __QMC > Virtual Proxies__
       * Create a virtual proxy that uses Ticket authentication
+      * Ensure the virtual proxy is linked to a proxy and load balances to the Qlik Sense engine.
       
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/virtualProxy.png)
       
