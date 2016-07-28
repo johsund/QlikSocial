@@ -21,7 +21,8 @@ function getTicket(req, res, next) {
 	var r = request.defaults({
 	  rejectUnauthorized: false,
 	  host: config.qlik.hostname,
-	  pfx: fs.readFileSync(__dirname + '\\client.pfx')
+	  pfx: fs.readFileSync(__dirname + '\\client.pfx'),
+	  passphrase: config.qlik.certificatepass
 	})
 
 	//  Authenticate whatever user you want

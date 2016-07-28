@@ -8,6 +8,7 @@ config.qlik.virtualproxy = 'ticket';
 config.qlik.userdirectory = 'QTSEL';
 config.qlik.username = 'qliksocial';
 config.qlik.certificatepath = '';
+config.qlik.certificatepass = 'testing';
 
 
 module.exports = config;
