@@ -43,11 +43,21 @@ function getTicket(req, res, next) {
 	},
 	function(err, response, body) {
 		if(err) //handle err;
-		console.log(req);
-		req.qlikTicket = JSON.parse(body)['Ticket'];
-		//console.log(req.qlikTicket);
-		next();
+		{res.redirect('/error.html?reason=ticketfail');}
+		//console.log(req);
+		else {
+			if(body.substring(0,6)=='Couldn') {
+				res.redirect('/error.html?reason=virtualproxy');
+				//console.log('this works');
+			}
+			else {
+				req.qlikTicket = JSON.parse(body)['Ticket'];
+				//console.log(req.qlikTicket);
+				next();
+			}
+
 		}
+	}
 
 	);
 };	
