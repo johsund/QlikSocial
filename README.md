@@ -62,9 +62,9 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
       
       
 ## Starting QlikSocial
-  * Start the NodeJS Command Prompt from the Windows Start menu.
   * Navigate to your QlikSocial folder root
-  * Type: __node index.js__
+  * Launch __QlikSocial.bat__
+  * Ensure that you can see the below screen (App launched on port 3000)
   
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/nodeJScommandPrompt.png)
   
