@@ -139,8 +139,8 @@ global.getDocList().then(function(docList) {
 		  'label': 'Followers',
 		  'value': '=Max(Search_user_followers_count)'
 		},{
-		  'label': 'Status Updates',
-		  'value': '=Max(Search_user_statuses_count)'
+		  'label': 'Retweet Count',
+		  'value': '=Sum(Search_retweet_count)'
 		}], document.getElementById('chartseven'));
 		
 		//chartfour

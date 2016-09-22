@@ -145,7 +145,7 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 					$("#del_"+doc.qDocId).click(function() {
 						console.log(this.id);
 						//window.location ='/remove?app='+doc.qDocId;
-						global.deleteApp(doc.qDocId).then(sleep(400)).then(refreshAppList(global)); //delete app, wait for done, then refresh app list
+						global.deleteApp(doc.qDocId).then(sleep(1500)).then(refreshAppList(global)); //delete app, wait for done, then refresh app list
 						console.log("deleted");
 						//refreshAppList(global);
 					});
