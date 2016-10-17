@@ -81,6 +81,10 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
   
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialStart.png)
 
+  * When clicking the Facebook checkbox for the first time- you will be prompted via a popup to authenticate with Facebook. Ensure the popup is not blocked by an ad-blocker.
+  
+  * The facebook page search is __optional__. If you just use the normal QlikSocial search, the first hit from Facebook will be returned. For example, you might search for __apple__ and the first Facebook page is a page with lots of posts around apples, the fruit. In reality you were looking for __apple__ the software company. Use the search in the Facebook box to ensure you're looking for the correct topic when searching in QlikSocial.
+
 # Acknowledgements
 * Thanks to Alex Karlsson ([@Mindspank](https://github.com/mindspank)) for qSocks and projects like Sense-It & Diplomatic Pulse.
 * Thanks to Nick Webster ([@websy85](https://github.com/websy85)) for the sense-search-components.
