@@ -1,0 +1,5 @@
+Get Page IDs for a topic:
+https://graph.facebook.com/search?q=OCBC&type=page&access_token=EAACEdEose0cBAPS80FleYMTuhNoFzvFK7MHQrtaBGdKsVwj0wLLBUwJLpaSZAhjJB3oqg9nFfRh2oCQ4EXwQMMQamLZBcdQdhdXoIf0qw6ztc4kxBqRgBqe7uDzK2ZCrs9hvFKC8fB8LBpUvlhwgLNsnzCAYuYqHnZCWqYVK9gZDZD
+
+Get token from https://developers.facebook.com/tools/explorer/145634995501895/?method=GET&path=search%3Fq%3Docbc%26type%3Dpage&version=v2.7
+

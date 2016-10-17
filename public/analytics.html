@@ -40,16 +40,35 @@
   </head>
 
   <body role="document" id="body">
+  <script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1771165083147512',
+      xfbml      : true,
+      version    : 'v2.8'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+  
 
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-12" style="padding:15px 0px 0px 0px;">
+			<div class="col-md-12" style="padding:0px 0px 0px 0px;">
 
-				<div class="page-header" style="border-bottom:0px;display:block-inline;opacity:0.8;margin-top:10px;">
+				<div class="analysis-page-header" style="margin-top:0px;">
 					
-					<h1 style="background-color:#5cb85c;padding:0px 0px 0px 0px;margin:0px 0px 0px 0px;opacity:1;">
-					<img src="images\QlikSocialLogo-small.png" style="align:left;opacity:1;padding-left:15px;">
-						<span style="opacity:1;color:#fff;padding-right:45px;">QlikSocial <small style="color:#fff;padding-left:45px;width:50%;padding-right:45px;" id="searchTerms"></small></span>
+					<h1 style="padding:0px 0px 0px 0px;margin:0px 0px 0px 0px;">
+					<img src="images\QlikSocialLogo-small.png" style="align:left;opacity:1;padding-left:25px;height:60px">
+						<span style="opacity:1;color:#fff;padding-right:45px;font-size:28px;">QlikSocial <small style="color:#fff;padding-left:45px;width:50%;padding-right:45px;" id="searchTerms"></small></span>
 						<span style="width:80%;margin-top:5px;margin-right:0px;padding-left:30px;padding-right:30px;"><sense-search-input id="myInput"></sense-search-input></span>
 					</h1>
 					
@@ -91,14 +110,21 @@
 			<!--<div id="tweet" tweetID="733345138731327488"></div>-->
 			</div>
 			<div class="col-md-6" style="display:inline;" >
-				<div class="bordered chart" id="chartone" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:42%;"></div>
-				<div class="bordered chart" id="charttwo" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:42%;"></div>	
-				<div class="bordered chart" id="chartseven" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;height:350px;width:85%;"></div>
-				<!--<div class="bordered chart" id="chartfour" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;height:350px;"></div>-->
-				<div class="bordered chart" id="chartfive" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:40%;font-size:12px;"></div>
-				<div class="bordered chart" id="chartsix" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:40%;"></div>
-				<div class="bordered chart" id="chartthree" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;height:350px;width:80%"></div>				
-				
+				<div style="width:100%;" id="analyticsPane">
+					<div class="heading" style="width:85%;">Analytics</div>
+					<div class="bordered chart" id="chartone" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:42%;"></div>
+					<div class="bordered chart" id="charttwo" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:42%;"></div>	
+					<div class="bordered chart" id="chartnine" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:42%;"></div>
+					<div class="bordered chart" id="chartthree" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;height:350px;width:85%"></div>	
+					<!--<div class="heading" style="width:85%;">Twitter analytics</div>-->
+					<div class="bordered chart" id="chartseven" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;height:350px;width:85%;"></div>
+					<!--<div class="bordered chart" id="charteight" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;height:350px;width:85%;"></div>-->
+					<!--<div class="bordered chart" id="chartfour" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;height:350px;"></div>-->
+					<div class="bordered chart" id="chartfive" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:42%;font-size:12px;"></div>
+					<div class="bordered chart" id="chartsix" style="padding: 10px 10px 10px 10px;float:left;margin-right:10px;margin-bottom:10px;width:42%;"></div>
+					
+					<!--<div class="heading" style="width:85%;">Facebook analytics</div>					-->
+				</div>
 			</div>
 		</div>
 	</div>

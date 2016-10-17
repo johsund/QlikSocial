@@ -133,15 +133,34 @@ global.getDocList().then(function(docList) {
 		}, document.getElementById('chartsix'));		
 
 		var chartseven = new D3Scatter([{
-		  'dim': 'UserName',
+		  'dim': 'Search_user_notifications',
 		  'label': 'User Name'
 		}], [{
 		  'label': 'Followers',
-		  'value': '=Max(Search_user_followers_count)'
+		  'value': '=Max({$<datasource={"Twitter"}>} Search_user_followers_count)'
 		},{
 		  'label': 'Retweet Count',
-		  'value': '=Sum(Search_retweet_count)'
+		  'value': '=Sum({$<datasource={"Twitter"}>} Search_retweet_count)'
 		}], document.getElementById('chartseven'));
+		
+		// var charteight = new D3Scatter([{
+		  // 'dim': 'Search_id',
+		  // 'label': 'FacebookPost'
+		// }], [{
+		  // 'label': 'Shares',
+		  // 'value': '=Max({$<datasource={"Facebook"}>} Search_favorite_count)'
+		// },{
+		  // 'label': 'Likes',
+		  // 'value': '=Sum({$<datasource={"Facebook"}>} Search_retweet_count)'
+		// }], document.getElementById('charteight'));		
+		
+		var chartnine= new Table([{
+		  'dim': 'datasource',
+		  'label': 'Data Sources'
+		}], {
+		  'label': '# of posts',
+		  'value': 'count(Search_id)'
+		}, document.getElementById('chartnine'));			
 		
 		//chartfour
 		
@@ -376,7 +395,7 @@ function Filter(field, label, element, shouldsearch) {
    * Filter HTML template
    */
   var tmpl = '<div id="' + labeltrim + '" data-field="' + field + '" class="filter expanded" style="overflow-y:hidden;">';
-  tmpl += '<div class="title">' + label;
+  tmpl += '<div class="title" style="font-weight: bold;">' + label;
   tmpl += '  <div class="right"><div class="count"></div><img src="static/img/toggle.svg"></div>';
   tmpl += '</div>';
   tmpl += '<div class="items"></div>';
@@ -595,10 +614,12 @@ function D3Bar(dimensions, expression, element) {
 		//console.log(layout.qHyperCube.qDataPages[0].qMatrix.length);
 		var data = layout.qHyperCube.qDataPages[0].qMatrix;
 //		console.log(data);
+//console.log(element);
 
-			var calcWidth = layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : layout.qHyperCube.qDataPages[0].qMatrix.length*30;
+			//var calcWidth = layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : layout.qHyperCube.qDataPages[0].qMatrix.length*30;
+			var calcWidth = layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : $(element).width();
 
-			$(element).width(calcWidth);
+			//$(element).width(calcWidth);
 
 			var margin = {top: 20, right: 20, bottom: 30, left: 40},
 				width = calcWidth - margin.left - margin.right,
@@ -686,6 +707,7 @@ function D3Bar(dimensions, expression, element) {
  
  function D3Scatter(dimensions, expression, element) {
 
+	//console.log();
 	//console.log("D3Bar fired");
 	var cube, max;
 	
@@ -939,7 +961,7 @@ function D3Bar(dimensions, expression, element) {
 				  .attr("r", 5)
 				  .attr("cx", function(d) { return x(d.Metric1); })
 				  .attr("cy", function(d) { return y(d.Metric2); })
-				  .style("fill", '#5cb85c');
+				  .style("fill", 'var(--main-color)');
 
 				lasso.items(d3.selectAll(".dot"));	  
 				  
@@ -1059,7 +1081,11 @@ function ContentTable(fieldlist, element) {
         var $row;
         if( d[0].qText === 'Twitter' ) {
           $row = createTweetRow(d);
-        } else {
+        } 
+		else if( d[0].qText === 'Facebook' ) {
+			$row = createFBRow(d);
+		}
+		else {
           $row = createWebRow(d);
         };
 
@@ -1101,7 +1127,11 @@ function ContentTable(fieldlist, element) {
         var $row;
         if( d[0].qText === 'Twitter' ) {
           $row = createTweetRow(d);
-        } else {
+        } 
+		else if( d[0].qText === 'Facebook' ) {
+			$row = createFBRow(d);
+		}		
+		else {
           $row = createWebRow(d);
         };
 
@@ -1151,6 +1181,119 @@ function ContentTable(fieldlist, element) {
     $row.on('click', function(e) {
       if(e.target.nodeName == 'A') return null;
       $(this).find('.details').slideToggle('fast');
+    });
+    
+    return $row;
+  };
+
+  function createFBRow(d) {
+	//console.log("createtweetrow fired");
+    var $row = $('<div class="item" />');
+
+    $('<div class="info"><i class="fa fa-facebook"></i>&nbsp;&nbsp;' + d[4].qText + spacer + d[2].qText + '</div>').appendTo($row);
+    $('<div class="body">' + d[3].qText + '<br><img style="display: none;"></img></div>').appendTo($row);
+    
+    var detailsTmpl = '<div class="details" style="display: none;"><div class="details-bar">';
+    detailsTmpl += '<ul><li class="retweet">LIKES <strong>' + d[7].qText + '</strong>';
+    detailsTmpl += '</li><li class="favorite">SHARES <strong>' + d[6].qText + '</strong></li>'
+    detailsTmpl += '<li class="handle">Facebook HANDLE <strong>' + d[4].qText + '</strong></li><li></li></ul>';
+    detailsTmpl += '<a style="padding-left:20px;" target="_blank" href="https://www.facebook.com/qlik/posts/' + d[5].qText + '">Read on Facebook</a></div>';
+    
+    var $details = $(detailsTmpl);
+	
+	
+	
+	//console.log(d[1].qText.length);
+	
+	
+	//$details.html('<div>'+d[1].qText+'</div>');
+   
+   
+   // console.log(d[8].qText);
+    //mediaUUL
+	//console.log(d[8].qText);
+    if(d[8].qText != undefined) {
+      $row.find('.info').append('<i class="fa fa-picture-o"></i>')
+      $details.find('img').attr('src', d[8].qText).show();
+      $row.find('img').attr('src', d[8].qText).show();
+      //console.log(d[8].qText);
+    };
+	//var myHTML = d[1].qText.substring(1, d[1].qText.length()-1);
+
+	
+	//console.log(d[1].qText);
+    
+    $details.appendTo($row);
+	
+	//console.log($row);
+    
+    $row.on('click', function(e) {
+      if(e.target.nodeName == 'A') return null;
+      $(this).find('.details').slideToggle('fast');
+	  // $.getJSON('https://www.reddit.com/api/info.json?id=' + d[5].qText, function(data) {
+		  // console.log(data);
+	  // });
+	  
+	  console.log("Clicked");
+	  
+	   
+	  
+	  
+	  if($("#"+d[5].qText+"_comments").length>0) {}
+	  else {
+	  $('<div class="details" id="'+d[5].qText+'_comments" style="margin-left:-20px;padding-left:0px;padding-top:0px;"></div>').appendTo($row);
+	  $('<div id="'+d[5].qText+'" style="padding-left:40px;"><img src="images/spinner_128_anti_alias.gif" style="width:48px;height:48px;"><p>Loading Facebook comments</p></div>').appendTo("#"+d[5].qText+"_comments"); //PLACEHOLDER
+	  }
+	  
+		  FB.getLoginStatus(function(response) {
+			  if (response.status === 'connected') {
+				  console.log("FB connected already");
+				//facebookAccessToken = response.authResponse.accessToken;
+					FB.api(
+						"/"+d[5].qText+"/comments",
+						function (response) {
+						  if (response && !response.error && response.data.length!=0) {
+							/* handle the result */
+							console.log(response);
+							$("#"+d[5].qText+"_comments").empty();
+							var responseData = response.data;
+							var detailsTmpl = '<div class="details" id="'+d[5].qText+'" style=""><div class="details-bar">';
+							detailsTmpl += '<ul>';
+							$(responseData).each(function(index, data) {
+								console.log(data.from);
+								console.log(index);
+								detailsTmpl += '<li class="retweet" style="font-size:12px;">'+ (index+1) +' - '+data.from.name+' - <span style="font-size:12px;color:black;">' + data.message + '</span></li>';
+							});
+							
+							
+							//detailsTmpl += '</li><li class="favorite">SCORE <strong>0</strong></li>'
+							detailsTmpl += '</ul></div>';
+							
+							//$("#"+d[5].qText+"_comments").empty();
+							$(detailsTmpl).appendTo("#"+d[5].qText+"_comments");
+							//detailsTmpl += '<a target="_blank" href="https://www.facebook.com/qlik/posts/' + d[5].qText + '">Read on Facebook</a></div>';				
+							
+						  }
+						  else {
+							 // console.log("RESPONSE ERROR");
+							 $("#"+d[5].qText+"_comments").empty();
+							 var detailsTmpl = '<div class="details" style=""><div class="details-bar"><ul><li class="retweet" style="font-size:12px;">No post comments available</li></ul></div></div>';
+							 $(detailsTmpl).appendTo("#"+d[5].qText+"_comments");
+						  }
+						}
+					);
+			  } 
+			  else {
+				function myFacebookLogin() {
+				  FB.login(function(){}, {scope: 'public_profile'});
+				}
+				myFacebookLogin();				
+			  }
+		  });	  
+	  
+
+	  
+	  
     });
     
     return $row;

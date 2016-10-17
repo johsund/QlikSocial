@@ -1,6 +1,5 @@
 :root {
   --main-color: #449d44;
-  --main-hover-color: #116a11;
 }
 
 .hidden {
@@ -56,7 +55,7 @@ opacity: 1.0;
   font-size: 12px;
   line-height: 20px;
   color: #fff;
-  background-color: var(--main-color);
+  background-color: #5cb85c;
   text-align: center;
   -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
           box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
@@ -97,8 +96,6 @@ opacity: 1.0;
 			vertical-align: top;
 			white-space: nowrap;				
 		}
-		
-
 
 		
 		.col1 {
@@ -132,14 +129,7 @@ opacity: 1.0;
 .three-col-table td.col1 {
 			
 			cursor: pointer;
-}	
-
-.three-col-table tr:hover td:first-child {
-			font-weight:900;
-}	
-.three-col-table tr:hover td:nth-child(2) .qlikbarprogress-bar {
-			background: var(--main-hover-color);
-}
+}		
 
 #analyticsPane .heading {
     padding: 15px 0 10px 15px;
@@ -183,7 +173,7 @@ opacity: 1.0;
 }
 #sidebar .heading {
   padding: 15px 0 10px 15px;
-  color: var(--main-color);
+  color: #449d44;
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
@@ -194,7 +184,7 @@ opacity: 1.0;
   float: right;
   margin-right: 10px;
   font-size: 16px;
-  color: var(--main-color);
+  color: #449d44;
   cursor: pointer;
 }
 #sidebar #navigation {
@@ -213,7 +203,7 @@ opacity: 1.0;
   cursor: pointer;
 }
 #sidebar #navigation li.active {
-  border-left: 3px solid var(--main-color);
+  border-left: 3px solid #449d44;
   font-weight: 500;
 }
 #sidebar #filter-container {
@@ -406,13 +396,7 @@ opacity: 1.0;
   color: green;
 }
  .table-tweets .rows .item .info .fa-twitter {
-  color: #4099FF;
-}
- .table-tweets .rows .item .info .fa-reddit {
-  color: #FF5700;
-}
- .table-tweets .rows .item .info .fa-facebook {
-  color: #3b5998;
+  color: #449d44;
 }
  .table-tweets .rows .item .info .fa-picture-o {
   padding-left: 10px;
@@ -492,11 +476,11 @@ opacity: 1.0;
 }
 
 .chart .bar {
-  fill: var(--main-color);
+  fill: #5cb85c;
 }
 
 .chart .bar:hover {
-  fill: var(--main-hover-color);
+  fill: #1ca81c;
 }
 
 .chart .axis {
@@ -598,37 +582,4 @@ html body {
 
 .prevSearchListTitle {
 	color: var(--main-color);
-}
-
-.analysis-page-header {
-	border-bottom:0px;
-	display:block-inline;
-	opacity:0.8;
-	margin-top:10px;
-}
-
-.analysis-page-header h1 {
-	background-color:var(--main-color);
-	padding:0px 0px 0px 0px;
-	margin:0px 0px 0px 0px;
-	opacity:1;
-}
-
-#top-header-bar {
-	background-color:var(--main-color);
-	padding:0px 0px 0px 0px;
-	margin:0px 0px 0px 0px;
-	opacity:1;
-}
-
-.panel-body {
-	padding: 10px;
-}
-
-.panel-heading {
-	padding: 5px 10px;
-}
-
-.panel-title {
-	font-size:14px;
 }

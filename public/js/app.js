@@ -4,7 +4,11 @@ var qlikHost = 'sgsin-jsn1.qliktech.com';
 var qlikVirtualProxy = 'ticket';
 var qlikWebConnectorHost = 'localhost';
 
+
+var facebookAccessToken;
 var qsTicket;
+var facebookPageID;
+var facebookSearchedPageID;
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -128,7 +132,8 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 				if(doc.qDocName.substring(0,10)=='QlikSocial') {
 					//console.log(doc);
 					//console.log(doc.qDocName.substring(11, doc.qDocName.length-11))
-					$("#previous-searches").append('<div border="0px"><div style="display:inline-block;width:90%;"><a href="#" style="padding: 0px 15px;" class="list-group-item" id="' + doc.qDocId + '"><h4>' + doc.qDocName.substring(11, doc.qDocName.indexOf('-201')) + '</h4><h6>'+doc.qDocName.substring(doc.qDocName.length - 10)+'</h5></a></div><div style="display:inline-block;float:right;padding-top:20px;"><i class="fa fa-trash-o fa-2" id="'+ 'del_' + doc.qDocId +'" aria-hidden="true" style="display:inline;padding:0px;font-size:20px;cursor:pointer;"></i></div></div>');
+					//$("#previous-searches").append('<div border="0px"><div style="display:inline-block;width:90%;"><a href="#" style="padding: 0px 15px;" class="list-group-item" id="' + doc.qDocId + '"><h5>' + doc.qDocName.substring(11, doc.qDocName.indexOf('-201')) + '</h5><h6>'+doc.qDocName.substring(doc.qDocName.length - 10)+'</h6></a></div><div style="display:inline-block;float:right;padding-top:20px;"><i class="fa fa-trash-o fa-2" id="'+ 'del_' + doc.qDocId +'" aria-hidden="true" style="display:inline;padding-top:0px;padding-right:20px;font-size:20px;cursor:pointer;"></i></div></div>');
+					$("#previous-searches").append('<div border="0px"><div style="display:inline-block;width:90%;"><a href="#" style="padding: 0px 15px;" class="list-group-item" id="' + doc.qDocId + '"><h5><b class="prevSearchListTitle" style="">' + doc.qDocName.substring(11, doc.qDocName.indexOf('-201')) + '</b> - '+doc.qDocName.substring(doc.qDocName.length - 10)+'</h5></a></div><div style="float:right;padding-top:12px;width:35px;"><i class="fa fa-trash-o fa-2" id="'+ 'del_' + doc.qDocId +'" aria-hidden="true" style="padding-top:0px;font-size:18px;cursor:pointer;"></i></div></div>');
 					$("#"+doc.qDocId).hover(function() {
 						//console.log(doc.qDocId + " hover");
 						$("#"+doc.qDocId).addClass("list-group-item-success");
@@ -156,8 +161,55 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 
 	
 	$("#searchButton").click(function() {
+		
+		// function getFacebookPageID() {
+			
+		// return new Promise(function(resolve, reject) {	
+			// console.log("triggered");
+			// if ($("#buttonFacebook").attr('checked')) {
+				// if($("#accessToken").val()=="") {
+					// $.get("https://graph.facebook.com/search?q="+$("#searchObject").val().split(' ').join('+')+"&type=page&access_token=" + facebookAccessToken, function(data) {
+						// console.log(data.data[0].id);
+						// facebookPageID = data.data[0].id;
+					// });			
+				// }	
+				// else {
+					// facebookPageID = $("#accessToken").val();
+				// }
+				// return resolve(facebookPageID)
+			// }
+			// else {
+				// facebookPageID = "nofacebook";
+				// return resolve(facebookPageID)
+			// }
+		// });
+		// }
 
-		create(global);
+		if ($("#buttonFacebook").attr('checked')) {
+			
+			//if($("#accessToken").val()!="") {
+			//	facebookPageID = $("#accessToken").val();
+			
+			if(facebookSearchedPageID.length!=0) {
+				facebookPageID = facebookSearchedPageID;
+				create(global);
+			}
+			else {
+				$.get("https://graph.facebook.com/search?q="+$("#searchObject").val().split(' ').join('+')+"&type=page&access_token=" + facebookAccessToken, function(data) {
+						console.log(data);
+						console.log(data.data[0].id);
+						facebookPageID = data.data[0].id;
+						create(global);
+					});		
+			}			
+		}
+		else {
+			create(global);
+		}
+
+
+			
+
 	});	
 	
   });
@@ -165,6 +217,7 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 function create(global) {
 
 	//appinfo = app;
+	console.log(facebookPageID);
 
 	var d = new Date(Date.now());
 	//var msg = msg;
@@ -217,6 +270,35 @@ function create(global) {
 		loadscript += appendReddit(loadscript);		
 		//console.log(connectionReddit);
 		}
+
+	if($("#buttonFacebook").attr('checked')) {
+		
+		console.log("Facebook");
+		
+		// $.get("https://graph.facebook.com/search?q="+$("#searchObject").val().split(' ').join('+')+"&type=page&access_token=" + facebookAccessToken, function(data) {
+			// console.log(data.data[0].id);
+		// });
+		
+		  FB.getLoginStatus(function(response) {
+			  if (response.status === 'connected') {
+				  console.log("FB connected already");
+				facebookAccessToken = response.authResponse.accessToken;
+			  } 
+		  });
+		
+		
+		sourceCounter += 1;
+		
+		connectionFacebook = {
+			qName: 'QlikSocial Facebook' + ' ' + Date.now(),
+			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=FacebookFanPagesConnector&table=Feed&pageId='+facebookPageID+'&maxResults=300&appID=',
+			qType: 'internet'
+		};		
+		
+		loadscript += appendFacebook(loadscript);		
+		//console.log(connectionReddit);
+		}		
+		
 	//if(sourceCounter>1) {
 		$(".container").fadeTo( "slow" , 0.5, function() {
 		// Animation complete.
@@ -230,7 +312,7 @@ function create(global) {
 	
 ///*	
 	createAndOpen(global, appname)
-		.then(createConnectionTwitter)
+		.then(createConnections)
 		//.then(createConnectionReddit)
 		.then(getSetScript)
 		.then(sleep(100))
@@ -312,25 +394,50 @@ function createAndOpen(global, appname) {
 	// }
 };
 
-function createConnectionTwitter(handle) {
-	if($("#buttonTwitter").attr('checked')) {
+function createConnections(handle) {
+	
 		//console.log(handle);
+		//console.log(connectionFacebook);
 		$(document.getElementById('qlikProgress')).append('<p>- Creating Data Connection(s)</p>');
 		$(document.getElementById('progressBar')).width('20%');
 		return new Promise(function(resolve, reject) {
 			handle.createConnection(connectionTwitter).then(function() {
+				if($("#buttonTwitter").attr('checked')) {
+					handle.createConnection(connectionTwitter);
+				}
 				if($("#buttonReddit").attr('checked')) {
 					handle.createConnection(connectionReddit);
+				}
+				if($("#buttonFacebook").attr('checked')) {
+					handle.createConnection(connectionFacebook);
 				}
 				return resolve(handle);
 			}, function(error) {
 				return reject(error);
 			})
 		})
-	}
-	else {
-		//return 0;
-	}
+};
+
+function createConnectionsold(handle) {
+	
+	return new Promise(function(resolve, reject) {
+		$(".socialMediaButton").each(function(index) {
+			if($(this).attr('checked')) {
+				if($(this).id == "buttonTwitter") {
+					handle.createConnection(connectionTwitter)
+				}
+				else if($(this).id == "buttonReddit") {
+					handle.createConnection(connectionReddit)
+				}
+				else if($(this).id == "buttonFacebook") {
+					handle.createConnection(connectionFacebook)
+				}				
+				
+			}
+		});
+		return resolve(handle);
+	})
+	
 };
 
 // function createConnectionReddit(handle) {
@@ -405,7 +512,7 @@ function buildUI(handle) {
 
 function appendTwitter(loadscript) {
 	loadscript += "\r\nTwitterConnectorV2_Search:";
-	loadscript += "\r\nLOAD";
+	loadscript += "\r\nLOAD DISTINCT";
 	loadscript += "\r\n    'Twitter' as datasource,";
 	loadscript += "\r\n    id as Search_id,";
 	loadscript += "\r\n    created_at as Search_created_at,";
@@ -452,9 +559,9 @@ function appendTwitter(loadscript) {
 	loadscript += "\r\n    user_name as Search_user_name,";
 	loadscript += "\r\n    user_screen_name as Search_user_screen_name,";
 	loadscript += "\r\n    user_location as Search_user_location,";
-	loadscript += "\r\n    user_profile_image_url as Search_user_profile_image_url,";
-	loadscript += "\r\n    user_description as Search_user_description,";
-	loadscript += "\r\n    user_url as Search_user_url,";
+	loadscript += "\r\n    '' as Search_user_profile_image_url,"; //user_profile_image_url
+	loadscript += "\r\n    '' as Search_user_description,"; //user_description
+	loadscript += "\r\n    '' as Search_user_url,"; //user_url
 	loadscript += "\r\n    user_geo_enabled as Search_user_geo_enabled,";
 	loadscript += "\r\n    user_protected as Search_user_protected,";
 	loadscript += "\r\n    user_followers_count as Search_user_followers_count,";
@@ -473,7 +580,7 @@ function appendTwitter(loadscript) {
 	loadscript += "\r\n    user_follow_request_sent as Search_user_follow_request_sent,";
 	loadscript += "\r\n    user_is_translator as Search_user_is_translator,";
 	loadscript += "\r\n    user_name as UserName,";
-	loadscript += "\r\n    user_notifications as Search_user_notifications";
+	loadscript += "\r\n    user_name as Search_user_notifications";
 	loadscript += "\r\nFROM [lib://" + connectionTwitter.qName + "] (qvx) where possibly_sensitive='false';";
 	
 	return loadscript;
@@ -555,6 +662,83 @@ function appendReddit(loadscript) {
 	return loadscript;
 }
 
+function appendFacebook(loadscript) {
+
+	loadscript += "\r\nFacebookSearch:";
+	loadscript += "\r\nLOAD";
+	loadscript += "\r\n    'Facebook' as datasource,";
+	loadscript += "\r\n    object_id as Search_id,";
+	loadscript += "\r\n    created_time as Search_created_at,";
+	loadscript += "\r\n    timestamp(timestamp#(date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') & ' ' & time#(left(subfield(created_time, 'T', 2),8), 'hh:mm:ss'), 'YYYY-MM-DD hh:mm:ss'), 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
+	loadscript += "\r\n    date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') as Search_created_at_date,";
+	loadscript += "\r\n    time#(subfield(created_time, 'T', 2), 'hh:mm:ss+0000') as Search_created_at_time,";
+	loadscript += "\r\n    hour(time(frac(created_time/ 86400 + 25569), 'hh:mm:ss')) as hour,";
+	loadscript += "\r\n    message as Search_text,";
+	loadscript += "\r\n    id as Search_Unique_id,";
+	loadscript += "\r\n    '' as Search_text_urlEncoded,";
+	loadscript += "\r\n    'en' as Search_lang,";
+	loadscript += "\r\n    '' as Search_source,";
+	loadscript += "\r\n    '' as Search_truncated,";
+	loadscript += "\r\n    '' as Search_in_reply_to_screen_name,";
+	loadscript += "\r\n    '' as Search_in_reply_to_status_id,";
+	loadscript += "\r\n    '' as Search_in_reply_to_user_id,";
+	loadscript += "\r\n    total_likes as Search_retweet_count,";
+	loadscript += "\r\n    shares as Search_favorite_count,";
+	loadscript += "\r\n    '' as Search_retweeted,";
+	loadscript += "\r\n    '' as Search_favorited,";
+	loadscript += "\r\n    '' as Search_possibly_sensitive,";
+	loadscript += "\r\n    '' as Search_hashtag_count,";
+	loadscript += "\r\n    '' as Search_hash_tags,";
+	loadscript += "\r\n    '' as Search_first_hash_tag,";
+	loadscript += "\r\n    '' as Search_first_hash_tag_clean,";
+	loadscript += "\r\n    '' as Search_url_count,";
+	loadscript += "\r\n    '' as Search_expanded_urls,";
+	loadscript += "\r\n    '' as Search_first_expanded_url,";
+	loadscript += "\r\n    '' as Search_user_mentions_count,";
+	loadscript += "\r\n    '' as Search_user_mentions,";
+	loadscript += "\r\n    '' as Search_first_user_mention,";
+	loadscript += "\r\n    '' as Search_media_count,";
+	loadscript += "\r\n    '' as Search_media_expanded_urls,";
+	loadscript += "\r\n    picture as Search_first_media_expanded_url,";
+	loadscript += "\r\n    '' as Search_symbols_count,";
+	loadscript += "\r\n    '' as Search_symbols,";
+	loadscript += "\r\n    '' as Search_first_symbol,";
+	loadscript += "\r\n    '' as Search_media_photo_count,";
+	loadscript += "\r\n    '' as Search_media_photo_urls,";
+	loadscript += "\r\n    picture as Search_first_media_photo_url,";
+	loadscript += "\r\n    '' as Search_metadata_result_type,";
+	loadscript += "\r\n    'en' as Search_metadata_iso_language_code,";
+	loadscript += "\r\n    '' as Search_user_id,";
+	loadscript += "\r\n    from_name as Search_user_name,";
+	loadscript += "\r\n    from_name as Search_user_screen_name,";
+	loadscript += "\r\n    '' as Search_user_location,";
+	loadscript += "\r\n    '' as Search_user_profile_image_url,";
+	loadscript += "\r\n    '' as Search_user_description,";
+	loadscript += "\r\n    '' as Search_user_url,";
+	loadscript += "\r\n    '' as Search_user_geo_enabled,";
+	loadscript += "\r\n    '' as Search_user_protected,";
+	loadscript += "\r\n    '' as Search_user_followers_count,";
+	loadscript += "\r\n    '' as Search_user_friends_count,";
+	loadscript += "\r\n    '' as Search_user_listed_count,";
+	loadscript += "\r\n    '' as Search_user_favourites_count,";
+	loadscript += "\r\n    '' as Search_user_statuses_count,";
+	loadscript += "\r\n    '' as Search_user_created_at,";
+	loadscript += "\r\n    '' as Search_user_user_created_at_timestamp,";
+	loadscript += "\r\n    '' as Search_user_user_created_at_date,";
+	loadscript += "\r\n    '' as Search_user_user_created_at_time,";
+	loadscript += "\r\n    '' as Search_user_utc_offset,";
+	loadscript += "\r\n    '' as Search_user_time_zone,";
+	loadscript += "\r\n    '' as Search_user_verified,";
+	loadscript += "\r\n    'en' as Search_user_lang,";
+	loadscript += "\r\n    '' as Search_user_follow_request_sent,";
+	loadscript += "\r\n    '' as Search_user_is_translator,";
+	loadscript += "\r\n    from_name as UserName,";
+	loadscript += "\r\n    '' as Search_user_notifications";
+	loadscript += "\r\nFROM [lib://" + connectionFacebook.qName + "]  (qvx);";
+	
+	return loadscript;
+}
+
 	$("#buttonTwitter").click(function() {
 		if ($("#buttonTwitter").attr('checked')) {
 			$("#buttonTwitter").removeAttr('checked');
@@ -591,10 +775,72 @@ function appendReddit(loadscript) {
 		//$("#tooltip").toggleClass("hidden");
 		$("#panelReddit").toggleClass("panel-success");	
 	});
-	$("#buttonLinkedIn").click(function() {
-		$("#checkLinkedIn").toggleClass("hidden");
-		$("#panelLinkedIn").toggleClass("panel-success");
-	});	
+	$("#buttonFacebook").click(function() {
+		if ($("#buttonFacebook").attr('checked')) {
+			$("#buttonFacebook").removeAttr('checked');
+		} else {
+			function myFacebookLogin() {
+			  FB.login(function(){}, {scope: 'public_profile'});
+			}
+			
+			FB.getLoginStatus(function(response) {
+			  if (response.status === 'connected') {
+				  console.log("FB connected already");
+				facebookAccessToken = response.authResponse.accessToken;
+			  } 
+			  else {
+				  console.log("Trigger FB login");
+				 myFacebookLogin();
+			  }
+			} );
+			
+			$("#buttonFacebook").attr('checked', 'checked');
+		}		
+		$("#checkFacebook").toggleClass("hidden");
+		$("#panelFacebook").toggleClass("panel-success");
+		$("#accessTokenForm").toggleClass("hidden");
+	});
+
+	$("#searchFBButton").click(function() {
+		console.log("triggered");
+		$.get("https://graph.facebook.com/search?q="+$("#findFBPage").val().split(' ').join('+')+"&type=page&access_token=" + facebookAccessToken, function(data) {
+			//console.log(data);
+			//console.log(data.data[0].id);
+			//facebookPageID = data.data[0].id;
+			addDropDown(data);
+		});	
+	});
+	
+	function addDropDown(data) {
+		var htmlDropDown="";
+		//console.log(data);
+		//console.log($("#fbDropDown").length);
+		if($('#fbDropDown').length) {
+			console.log("TRIGG");
+			$("#fbDropDown").remove();
+		};
+		htmlDropDown += '<select style="width:150px;float:right;margin-top:15px;" id="fbDropDown">';
+		htmlDropDown += '<option value="" disabled selected>Select option</option>';
+		$.each(data.data, function(index) {
+			htmlDropDown += '<option id="select_'+ data.data[index].id +'" value="'+data.data[index].id+'">'+data.data[index].name+'</option>';
+			// $("#select_"+data.data[index].id).click(function() {
+				// console.log("TRIGGERED");
+				// $("#accessToken").val(data.data[index].id);
+			// });
+		});
+		
+		htmlDropDown += '</select>';
+		//console.log(htmlDropDown);
+		
+		$("#accessTokenForm").append(htmlDropDown);
+		
+		$("#fbDropDown").change(function() {
+			//console.log("TRIGGERED");
+			//$("#accessToken").val($("#fbDropDown").val());
+			facebookSearchedPageID = $("#fbDropDown").val();
+		});		
+		
+	}
 
 		 
 } );

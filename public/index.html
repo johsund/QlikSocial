@@ -40,6 +40,26 @@
 
   <body role="document" id="body">
 
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1771165083147512',
+      xfbml      : true,
+      version    : 'v2.8'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+  
+  
     <!-- Fixed navbar -->
 	<!--
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -84,21 +104,23 @@
       </div>-->
 
 		<div class="row">
-			<div class="col-md-12" style="padding:15px 0px 0px 0px;">
+			<div class="col-md-12" style="">
 
-				<div class="page-header" style="border-bottom:0px;display:block-inline;opacity:0.8;margin-top:10px;">
+				<div class="page-header" style="border-bottom:0px;display:block-inline;opacity:0.8;margin-top:5px;">
 					
-					<h1 style="background-color:#5cb85c;padding:0px 0px 0px 0px;margin:0px 0px 0px 0px;opacity:1;">
-					<img src="images\QlikSocialLogo-small.png" style="align:left;opacity:1;padding-left:15px;">
-						<span style="opacity:1;color:#fff;padding-right:45px;">QlikSocial</span>
+					<h1 style="" id="top-header-bar">
+					<img src="images\QlikSocialLogo-small.png" style="align:left;opacity:1;padding-left:15px;height:50px;">
+						<span style="opacity:1;color:#fff;padding-right:45px;margin-left:30px;font-size:24px;">QlikSocial</span>
 					</h1>
 				</div>
 			</div>
 		</div>
 
-      <div class="page-header" style="margin-top:5px;">
+      <!--<div class="page-header" style="margin-top:5px;">
         <h3>1. Pick social media platform(s)</h3> 
-      </div>
+		
+      </div>-->
+	  <div class="odagLabel" style="width:85%;">Select Platform</div>
 	  
 		<div class="row">
 		<div class="col-sm-4">
@@ -109,10 +131,10 @@
 				</div>
 			</div>
 			<div class="panel-body">
-				<button id="buttonTwitter" type="checkbox" style="width:30px;height:30px;"><i id="checkTwitter" class="fa fa-check hidden" aria-hidden="true"></i></button> <span id="twitterSelected" class="hidden"> Pick number of search pages to return</span>
-				<p><div id="sliderPages" style="margin-top:35px;" class="hidden"></div></p>
+				<button id="buttonTwitter" type="checkbox" class="socialMediaButton" style="width:30px;height:30px;"><i id="checkTwitter" class="fa fa-check hidden" aria-hidden="true"></i></button> <span id="twitterSelected" class="hidden"> Pick number of search pages to return</span>
+				<div id="sliderPages" style="margin-top:35px;" class="hidden"></div>
 				<button id="buttonTwitterLocal" type="checkbox" style="width:30px;height:30px;margin-top:15px;" class="hidden"><i id="checkTwitterLocal" class="fa fa-check hidden" aria-hidden="true"></i></button> <span id="twitterSelectedLocal" class="hidden"> Select tweets within X miles from me</span>
-				<p><div id="sliderRange" style="margin-top:35px;" class="hidden"></div></p>
+				<div id="sliderRange" style="margin-top:35px;" class="hidden"></div>
 			</div>
 		  </div>
 	    </div>
@@ -124,10 +146,33 @@
 				</div>
 			</div>
 			<div class="panel-body">
-				<button id="buttonReddit" type="checkbox" style="width:30px;height:30px;"><i id="checkReddit" class="fa fa-check hidden" aria-hidden="true"></i></button>
+				<button id="buttonReddit" type="checkbox" class="socialMediaButton" style="width:30px;height:30px;"><i id="checkReddit" class="fa fa-check hidden" aria-hidden="true"></i></button>
+
 			</div>
 		  </div>
 	    </div>
+		<div class="col-sm-4" style="opacity:1;">
+		  <div id="panelFacebook" class="panel panel-default">
+			<div class="panel-heading">
+				<div>
+					<h3 class="panel-title"><b>Facebook <i class="fa fa-facebook" aria-hidden="true"></i></b></h3>
+				</div>
+			</div>
+			<div class="panel-body">
+				<button id="buttonFacebook" type="checkbox" class="socialMediaButton" style="width:30px;height:30px;"><i id="checkFacebook" class="fa fa-check hidden" aria-hidden="true"></i></button>
+				<div class="form-group hidden" id="accessTokenForm">
+				 <!-- <label for="accessToken" style="margin-top:10px;font-weight:100;"><b>Pre-set Page ID </b>(otherwise best match selected from search term):</label>
+				  <input type="text" class="form-control" id="accessToken">-->
+				  <label for="findFBPage" style="margin-top:10px;font-weight:100;"><b>[Optional] Search for Facebook Page </b> to preset a page. (Otherwise first search hit will be used):</label>
+				  <input type="text" class="form-control" id="findFBPage">		
+				  <button type="button" class="btn btn btn-success" id="searchFBButton" style="opacity:1;margin-top:10px;">Search</button>			  
+				</div>				
+			</div>
+		  </div>
+	    </div>			
+
+		</div><!-- /.col-sm-4 -->
+		<div class="row">
 		<div class="col-sm-4" style="opacity:.3;">
 		  <div id="panelLinkedIn" class="panel panel-default">
 			<div class="panel-heading">
@@ -137,20 +182,6 @@
 			</div>
 			<div class="panel-body">
 				<button id="buttonLinkedIn" type="checkbox" style="width:30px;height:30px;"><i id="checkLinkedIn" class="fa fa-check hidden" aria-hidden="true"></i></button>
-			</div>
-		  </div>
-	    </div>	
-		</div><!-- /.col-sm-4 -->
-		<div class="row">
-		<div class="col-sm-4" style="opacity:.3;">
-		  <div id="panelFacebook" class="panel panel-default">
-			<div class="panel-heading">
-				<div>
-					<h3 class="panel-title"><b>Facebook <i class="fa fa-facebook" aria-hidden="true"></i></b></h3>
-				</div>
-			</div>
-			<div class="panel-body">
-				<button id="buttonFacebook" type="checkbox" style="width:30px;height:30px;"><i id="checkFacebook" class="fa fa-check hidden" aria-hidden="true"></i></button>
 			</div>
 		  </div>
 	    </div>	
@@ -182,9 +213,10 @@
 
 	<div class="container">
 		<div class="row">
-			<h3>2. Search keyword(s)</h3>
+			<!--<h3>2. Search keyword(s)</h3>-->
+			<div class="odagLabel" style="width:85%;">Search keyword(s)</div>
 			   <!--<div id="custom-search-input">-->
-					<div class="input-group col-sm-11" style="float:left;">
+					<div class="input-group col-sm-11" style="float:left;padding-bottom:20px;padding-right:15px;">
 						<input type="text" class="search-query form-control" placeholder="Search" id="searchObject"/>
 						<!--<span class="input-group-btn">
 							<button class="btn btn-danger" type="button" id="searchbutton">
@@ -193,12 +225,14 @@
 						</span>-->
 					</div>
 					<div>
-						<button type="button" class="btn btn btn-success" id="searchButton" style="margin-left:10px;">Search</button>
+						<button type="button" class="btn btn btn-success" id="searchButton" style="">Search</button>
 					</div>
 				<!--</div>-->
-			<h3> or select an earlier search</h3>
+			<!--<h3> or select an earlier search</h3>-->
+			<div class="odagLabel" style="width:85%;">or select an earlier search</div>
 			        <div class="col-sm-6" style="margin-left:-15px;border:0px;">
-					  <div class="list-group" id="previous-searches" style="border:0px;box-shadow:0 0px 0px;">
+					  <div class="list-group scrollbar" id="previous-searches" style="border:0px;box-shadow:0 0px 0px;height:400px;overflow:auto;">
+					  
 						<!--<a href="#" class="list-group-item active">
 						  Cras justo odio
 						</a>-->
