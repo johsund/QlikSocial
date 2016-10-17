@@ -62,6 +62,10 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
       * Start QlikWebConnector and configure access to Twitter (login with Twitter account)
 
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/configureTwitter.png)
+  
+      * Configure access to Facebook (login with Facebook account)
+      
+![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/configureFB.png)      
       
       
 ## Starting QlikSocial
