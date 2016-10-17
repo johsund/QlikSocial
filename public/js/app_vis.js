@@ -961,6 +961,7 @@ function D3Bar(dimensions, expression, element) {
 				  .attr("r", 5)
 				  .attr("cx", function(d) { return x(d.Metric1); })
 				  .attr("cy", function(d) { return y(d.Metric2); })
+				  .style("fill", '#449d44')
 				  .style("fill", 'var(--main-color)');
 
 				lasso.items(d3.selectAll(".dot"));	  
