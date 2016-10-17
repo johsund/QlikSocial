@@ -86,6 +86,8 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
   
   * The facebook page search is __optional__. If you just use the normal QlikSocial search, the first hit from Facebook will be returned. For example, you might search for __apple__ and the first Facebook page is a page with lots of posts around apples, the fruit. In reality you were looking for __apple__ the software company. Use the search in the Facebook box to ensure you're looking for the correct topic when searching in QlikSocial.
   
+![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/configureFBsearch.png)  
+  
 ## Extra options
   * You have the option to change the color scheme from the standard QlikSocial green.
   * Open the colorstyler.css file and change the top 2 variables:
