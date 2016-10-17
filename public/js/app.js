@@ -780,7 +780,7 @@ function appendFacebook(loadscript) {
 			$("#buttonFacebook").removeAttr('checked');
 		} else {
 			function myFacebookLogin() {
-			  FB.login(function(){}, {scope: 'public_profile'});
+			  FB.login(function(){}, {scope: 'user_about_me'});
 			}
 			
 			FB.getLoginStatus(function(response) {
