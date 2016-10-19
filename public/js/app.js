@@ -190,7 +190,7 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 			//if($("#accessToken").val()!="") {
 			//	facebookPageID = $("#accessToken").val();
 			
-			if(facebookSearchedPageID.length!=0) {
+			if(facebookSearchedPageID != undefined) {
 				facebookPageID = facebookSearchedPageID;
 				create(global);
 			}
@@ -401,7 +401,7 @@ function createConnections(handle) {
 		$(document.getElementById('qlikProgress')).append('<p>- Creating Data Connection(s)</p>');
 		$(document.getElementById('progressBar')).width('20%');
 		return new Promise(function(resolve, reject) {
-			handle.createConnection(connectionTwitter).then(function() {
+			//handle.createConnection(connectionTwitter).then(function() {
 				if($("#buttonTwitter").attr('checked')) {
 					handle.createConnection(connectionTwitter);
 				}
@@ -412,9 +412,9 @@ function createConnections(handle) {
 					handle.createConnection(connectionFacebook);
 				}
 				return resolve(handle);
-			}, function(error) {
-				return reject(error);
-			})
+			//}, function(error) {
+			//	return reject(error);
+			//})
 		})
 };
 
