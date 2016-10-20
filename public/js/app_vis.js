@@ -26,6 +26,13 @@ var getUrlParameter = function getUrlParameter(sParam) {
     }
 };  
 
+window.onresize = refreshAllCharts;
+
+function refreshAllCharts() {
+	
+	pubsub.publish('update');
+    //do a load of stuff
+}
  
 qsocks.Connect(config).then(function(global) {
 
@@ -40,7 +47,10 @@ global.getDocList().then(function(docList) {
   //Open document Sales Discovery
   global.openDoc(getUrlParameter('app')).then(function(app) {
 
-  
+	
+	
+	
+	
 	//Setting up search
 	senseSearch.connectWithQSocks(app); 
 	var inputOptions = {          
@@ -79,6 +89,11 @@ global.getDocList().then(function(docList) {
 			// console.log(searchString);
 			// SearchStuff("Search_text", searchString);
 		// });
+		
+		//get datasources
+		AllDatasources('datasource');
+		
+		
 		
 		//console.log("Test");
 		var chartone = new Table([{
@@ -143,16 +158,16 @@ global.getDocList().then(function(docList) {
 		  'value': '=Sum({$<datasource={"Twitter"}>} Search_retweet_count)'
 		}], document.getElementById('chartseven'));
 		
-		// var charteight = new D3Scatter([{
-		  // 'dim': 'Search_id',
-		  // 'label': 'FacebookPost'
-		// }], [{
-		  // 'label': 'Shares',
-		  // 'value': '=Max({$<datasource={"Facebook"}>} Search_favorite_count)'
-		// },{
-		  // 'label': 'Likes',
-		  // 'value': '=Sum({$<datasource={"Facebook"}>} Search_retweet_count)'
-		// }], document.getElementById('charteight'));		
+		var charteight = new D3Scatter([{
+		  'dim': 'Search_id',
+		  'label': 'FacebookPost'
+		}], [{
+		  'label': 'Shares',
+		  'value': '=Max({$<datasource={"Facebook"}>} Search_favorite_count)'
+		},{
+		  'label': 'Likes',
+		  'value': '=Sum({$<datasource={"Facebook"}>} Search_retweet_count)'
+		}], document.getElementById('charteight'));		
 		
 		var chartnine= new Table([{
 		  'dim': 'datasource',
@@ -193,7 +208,7 @@ function Table(dimensions, expression, element, sorting) {
   
 		
 	//console.log("table fired");
-	var cube, max;
+	var cube, max, idLabel;
 
 	var dimensionList = dimensions.map(function(d) {
 		return {
@@ -261,8 +276,9 @@ function Table(dimensions, expression, element, sorting) {
 			if(layout.qHyperCube.qDataPages[0].qMatrix[0][0].qIsEmpty) {
 				return $('<p>No Mentions Available</p>').appendTo($(element));
 			};
-
-			var $table = $('<table class="three-col-table" />');
+			//console.log($(element)[0].id);
+			idLabel = "table_"+$(element)[0].id;
+			var $table = $('<table class="three-col-table" id="table_'+$(element)[0].id+'" />');
 			var $thead = createHeader(layout);
 			var $tbody = $('<tbody />');
 
@@ -270,6 +286,7 @@ function Table(dimensions, expression, element, sorting) {
 				return d[1].qNum;
 			});
 
+			//console.log(layout.qHyperCube.qDataPages[0].qMatrix.length);
 			layout.qHyperCube.qDataPages[0].qMatrix.forEach(function(d) {
 				//console.log(d[0]);
 				//if(d[0].hasOwnProperty('qText')) {
@@ -286,6 +303,37 @@ function Table(dimensions, expression, element, sorting) {
 			$thead.appendTo($table)
 			$tbody.appendTo($table)
 			$table.appendTo($(element));
+			
+			var isMouseDown = false;
+			var isHighlighted;
+			var valueArray = [];
+			var selectionTrigger=0;
+			
+			$(".three-col-table td:first-child")
+			.mousedown(function(e) {
+				e.stopImmediatePropagation();
+				isMouseDown = true;
+				valueArray=[];
+				if($(this).hasClass("highlighting")!=true) {
+					$(this).toggleClass('highlighting');
+				}
+				isHighlighted = $(this).hasClass("highlighting");
+				valueArray.push(parseInt($(this).attr('id')));
+			}).mouseover(function(e) {
+				//e.stopImmediatePropagation();
+				if(isMouseDown) {
+					$(this).toggleClass('highlighting', isHighlighted);
+					valueArray.push(parseInt($(this).attr('id')));
+				}
+			})
+			 .mouseup(function(e) {
+				 e.stopImmediatePropagation();
+				 isMouseDown = false;
+				$(".highlighting").toggleClass("highlighting");
+				select(valueArray);
+			 })			
+			
+			
 
 		}, function(error) {
 			console.log(error)
@@ -302,9 +350,46 @@ function Table(dimensions, expression, element, sorting) {
 		var perc = (d[1].qNum / max) * 100;
 
 		var $row = $('<tr/>');
-		$('<td id="' + d[0].qElemNumber + '" class="col col1">' + d[0].qText + '</td>').click(function(event) {
-			select(+$(this).attr('id'));
-		}).appendTo($row);
+		// $('<td id="' + d[0].qElemNumber + '" class="col col1">' + d[0].qText + '</td>').click(function(event) {
+			// select(+$(this).attr('id'));
+		// }).appendTo($row);	
+		
+		////////////////////////// CODE FOR DRAG SELECT - FIRED ONCE FOR EVERY TD CREATING ISSUES ////////////////
+		
+
+		$('<td nowrap id="' + d[0].qElemNumber + '" class="col col1">' + d[0].qText + '</td>').appendTo($row);
+		//console.log("#table_chartone td");
+		//$("#table_chartone td:first-child").click(function() {console.log("Clicked");});
+		
+
+		 
+		   // var isMouseDown = false,
+				// isHighlighted;
+			  // $("#table_chartone td")
+				// .mousedown(function (e) {
+					// //console.log(e);
+					// e.stopImmediatePropagation();
+					// console.log("mousedown");
+				  // isMouseDown = true;
+				  // $(this).toggleClass("highlighting");
+				  // isHighlighted = $(this).hasClass("highlighting");
+				  // return false; // prevent text selection
+				// })
+				// .mouseover(function (e) {
+					// e.stopImmediatePropagation();
+				  // if (isMouseDown) {
+					// $(this).toggleClass("highlighting", isHighlighted);
+				  // }
+				// })
+				// .mouseup(function (e) {
+					// e.stopImmediatePropagation();
+					// console.log("mouseup");
+				  // isMouseDown = false;
+				  // //$(this).unbind().mousedown(function() {});
+				// });
+		 
+		 //////////////////////////////////////////////////////////////////////////////////////////////////
+		
 		$('<td class="col col2" style="width:175px;"><div class="qlikbarprogress"><div class="qlikbarprogress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: '+perc+'%"><span class="sr-only">40% Complete (success)</span></div></div></td>').appendTo($row);
 		$('<td class="col col3">' + d[1].qNum + '</td>').appendTo($row);
 
@@ -341,7 +426,8 @@ function Table(dimensions, expression, element, sorting) {
 	 * Will trigger a update message to notify other objects to update accordingly.
 	 */
 	function select(qElem) {
-		cube.selectHyperCubeValues('/qHyperCubeDef', 0, [qElem], true).then(function(success) {
+		console.log(qElem);
+		cube.selectHyperCubeValues('/qHyperCubeDef', 0, qElem, true).then(function(success) {
 			pubsub.publish('update');
 		})
 	}
@@ -378,6 +464,93 @@ function Table(dimensions, expression, element, sorting) {
         });
     };
 }(jQuery));
+
+function AllDatasources(field) {
+
+	console.log("getting app datasources");
+   var list;
+  // var listId;
+  // var $el = element;
+  // var existsInDOM = false;
+  // var selectedState = false;
+  // var openState = false;
+  // var searchable = shouldsearch || false;
+  // var labeltrim = label.replace(/\s+/g, '').replace(/\./g, '');
+
+  /**
+   * Filter HTML template
+   */
+  // var tmpl = '<div id="' + labeltrim + '" data-field="' + field + '" class="filter expanded" style="overflow-y:hidden;">';
+  // tmpl += '<div class="title" style="font-weight: bold;">' + label;
+  // tmpl += '  <div class="right"><div class="count"></div><img src="static/img/toggle.svg"></div>';
+  // tmpl += '</div>';
+  // tmpl += '<div class="items"></div>';
+  // tmpl += '</div>';
+
+  // var $div = existsInDOM ? $('#' + labeltrim) : $(tmpl);
+  // var $items = $div.find('.items');
+  // var $title = $div.find('.title');
+  // var $count = $div.find('.count');
+
+  /**
+   * Expand Filter on click.
+   */
+  // $title.on('click', function() {
+    // $(this).parent().toggleClass('expanded')
+  // });
+
+  /**
+   * Sort Filters alphabetically unless it's a date filter.
+   */
+  var sort = field == 'DateRange' ? {
+    "qSortByNumeric": 1
+  } : {
+    "qSortByState": 1,
+	"qSortByAscii": 1
+  };
+
+  /**
+   * Create the Qlik Sense Object
+   * https://help.qlik.com/sense/2.0/en-us/developer/Subsystems/EngineAPI/Content/GenericObject/PropertyLevel/ListObjectDef.htm
+   * 
+   * Returns a promise which will call render once it's fulfilled.
+   */
+  app.createSessionObject({
+    "qInfo": {
+      "qId": "",
+      "qType": "ListObject"
+    },
+    "qListObjectDef": {
+      "qLibraryId": "",
+      "qShowAlternatives": true,
+      "qDef": {
+        "qFieldDefs": [field],
+        "qSortCriterias": [sort]
+      },
+      "qInitialDataFetch": [{
+        "qTop": 0,
+        "qHeight": 800,
+        "qLeft": 0,
+        "qWidth": 1
+      }]
+    }
+  }).then(function(reply) {
+    list = reply;
+	//console.log(list);
+    setStage(list);
+  });
+	function setStage(list) {
+		 list.getLayout().then(function(layout) {
+			 var datasourceArray = [];
+			 $.each(layout.qListObject.qDataPages[0].qMatrix, function(value) {
+				 datasourceArray.push(layout.qListObject.qDataPages[0].qMatrix[value][0].qText);
+			 });
+			 $.each(datasourceArray, function(index, value) {
+				 $("." + value).removeClass("hidden");
+			 });
+		 });
+	}
+}
 
 
 function Filter(field, label, element, shouldsearch) {

@@ -237,6 +237,8 @@ function create(global) {
 	var twitter = true;
 	
 	loadscript = "";
+	
+	console.log(loadscript.length);
 	console.log($("#buttonTwitter").attr('checked'));
 	
 	var sourceCounter  = 0;
@@ -256,9 +258,12 @@ function create(global) {
 			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&maxNoPages='+$("#tooltip").text()+'&appID=',
 			qType: 'internet'
 		};	
-		loadscript += appendTwitter(loadscript);		
+		//console.log(loadscript.length);
+		//loadscript += appendTwitter(loadscript);	
+		loadscript += appendTwitter();	
+		//console.log(loadscript);		
 		//console.log(connectionTwitter);
-		}
+	}
 	if($("#buttonReddit").attr('checked')) {
 		sourceCounter += 1;
 		
@@ -267,9 +272,11 @@ function create(global) {
 			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=WebConnector&table=JsonToXmlRaw&url=http%3a%2f%2fwww.reddit.com%2fsearch.json%3fq%3d' + $("#searchObject").val().split(' ').join('+') + '%26sort%3drelevance%26limit%3d100&appID=',
 			qType: 'internet'
 		};		
-		loadscript += appendReddit(loadscript);		
+		//console.log(loadscript.length);
+		loadscript += appendReddit();		
+		//console.log(loadscript);
 		//console.log(connectionReddit);
-		}
+	}
 
 	if($("#buttonFacebook").attr('checked')) {
 		
@@ -295,9 +302,11 @@ function create(global) {
 			qType: 'internet'
 		};		
 		
-		loadscript += appendFacebook(loadscript);		
+		//console.log(loadscript.length);
+		loadscript += appendFacebook();
+		//console.log(loadscript);		
 		//console.log(connectionReddit);
-		}		
+	}		
 		
 	//if(sourceCounter>1) {
 		$(".container").fadeTo( "slow" , 0.5, function() {
@@ -309,7 +318,7 @@ function create(global) {
 	$(document.getElementById('qlikProgress')).append('<div style="height:20px;background-color:#eeeeee;margin-bottom:10px;" id="progressBox"><div class="progress-bar progress-bar-success" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 10%;background-image:linear-gradient(to bottom,#9FD888 0,#8FBF7C 100%);"><span class="sr-only">10% Complete</span></div></div>');
 
 	
-	
+	console.log(loadscript.length);
 ///*	
 	createAndOpen(global, appname)
 		.then(createConnections)
@@ -418,27 +427,27 @@ function createConnections(handle) {
 		})
 };
 
-function createConnectionsold(handle) {
+// function createConnectionsold(handle) {
 	
-	return new Promise(function(resolve, reject) {
-		$(".socialMediaButton").each(function(index) {
-			if($(this).attr('checked')) {
-				if($(this).id == "buttonTwitter") {
-					handle.createConnection(connectionTwitter)
-				}
-				else if($(this).id == "buttonReddit") {
-					handle.createConnection(connectionReddit)
-				}
-				else if($(this).id == "buttonFacebook") {
-					handle.createConnection(connectionFacebook)
-				}				
+	// return new Promise(function(resolve, reject) {
+		// $(".socialMediaButton").each(function(index) {
+			// if($(this).attr('checked')) {
+				// if($(this).id == "buttonTwitter") {
+					// handle.createConnection(connectionTwitter)
+				// }
+				// else if($(this).id == "buttonReddit") {
+					// handle.createConnection(connectionReddit)
+				// }
+				// else if($(this).id == "buttonFacebook") {
+					// handle.createConnection(connectionFacebook)
+				// }				
 				
-			}
-		});
-		return resolve(handle);
-	})
+			// }
+		// });
+		// return resolve(handle);
+	// })
 	
-};
+// };
 
 // function createConnectionReddit(handle) {
 	// if($("#buttonReddit").attr('checked')) {	
@@ -460,12 +469,14 @@ function createConnectionsold(handle) {
 
 function getSetScript(handle) {
 	//console.log(handle);
-	//console.log(loadscript);
+	console.log(loadscript);
 	$(document.getElementById('qlikProgress')).append('<p>- Setting Load Script</p>');
 	$(document.getElementById('progressBar')).width('40%');
 	return new Promise(function(resolve, reject) {
 		handle.getScript().then(function(script) {
+
 			script += ('\r\n' + loadscript);
+			console.log(script);
 			handle.setScript(script).then(function(reply) {
 				return resolve(handle);
 			}, function(error) {
@@ -510,233 +521,237 @@ function buildUI(handle) {
 
 //function createLoadscript
 
-function appendTwitter(loadscript) {
-	loadscript += "\r\nTwitterConnectorV2_Search:";
-	loadscript += "\r\nLOAD DISTINCT";
-	loadscript += "\r\n    'Twitter' as datasource,";
-	loadscript += "\r\n    id as Search_id,";
-	loadscript += "\r\n    created_at as Search_created_at,";
-	loadscript += "\r\n    timestamp#(mid(created_at, 9, 2) & '-' & mid(created_at, 5, 3) & '-' & mid(created_at, 27, 4) & ' ' & mid(created_at, 12, 8), 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
-	loadscript += "\r\n    date#(mid(created_at, 9, 2) & '-' & mid(created_at, 5, 3) & '-' & mid(created_at, 27, 4), 'DD-MMM-YYYY') as Search_created_at_date,";
-	loadscript += "\r\n    time#(mid(created_at, 12, 8), 'hh:mm:ss') as Search_created_at_time,";
-	loadscript += "\r\n    hour(time#(mid(created_at, 12, 8), 'hh:mm:ss')) as hour,";
-	loadscript += "\r\n    text as Search_text,";
-	loadscript += "\r\n    if(left(text,2)<>'RT', id) as Search_Unique_id,";
-	loadscript += "\r\n    text_urlEncoded as Search_text_urlEncoded,";
-	loadscript += "\r\n    lang as Search_lang,";
-	loadscript += "\r\n    source as Search_source,";
-	loadscript += "\r\n    truncated as Search_truncated,";
-	loadscript += "\r\n    in_reply_to_screen_name as Search_in_reply_to_screen_name,";
-	loadscript += "\r\n    in_reply_to_status_id as Search_in_reply_to_status_id,";
-	loadscript += "\r\n    in_reply_to_user_id as Search_in_reply_to_user_id,";
-	loadscript += "\r\n    retweet_count as Search_retweet_count,";
-	loadscript += "\r\n    favorite_count as Search_favorite_count,";
-	loadscript += "\r\n    retweeted as Search_retweeted,";
-	loadscript += "\r\n    favorited as Search_favorited,";
-	loadscript += "\r\n    possibly_sensitive as Search_possibly_sensitive,";
-	loadscript += "\r\n    hashtag_count as Search_hashtag_count,";
-	loadscript += "\r\n    hash_tags as Search_hash_tags,";
-	loadscript += "\r\n    first_hash_tag as Search_first_hash_tag,";
-	loadscript += "\r\n    if(first_hash_tag<>'' and first_hash_tag<>'undefined', first_hash_tag) as Search_first_hash_tag_clean,";
-	loadscript += "\r\n    url_count as Search_url_count,";
-	loadscript += "\r\n    expanded_urls as Search_expanded_urls,";
-	loadscript += "\r\n    first_expanded_url as Search_first_expanded_url,";
-	loadscript += "\r\n    user_mentions_count as Search_user_mentions_count,";
-	loadscript += "\r\n    user_mentions as Search_user_mentions,";
-	loadscript += "\r\n    first_user_mention as Search_first_user_mention,";
-	loadscript += "\r\n    media_count as Search_media_count,";
-	loadscript += "\r\n    media_expanded_urls as Search_media_expanded_urls,";
-	loadscript += "\r\n    first_media_expanded_url as Search_first_media_expanded_url,";
-	loadscript += "\r\n    symbols_count as Search_symbols_count,";
-	loadscript += "\r\n    symbols as Search_symbols,";
-	loadscript += "\r\n    first_symbol as Search_first_symbol,";
-	loadscript += "\r\n    media_photo_count as Search_media_photo_count,";
-	loadscript += "\r\n    media_photo_urls as Search_media_photo_urls,";
-	loadscript += "\r\n    first_media_photo_url as Search_first_media_photo_url,";
-	loadscript += "\r\n    metadata_result_type as Search_metadata_result_type,";
-	loadscript += "\r\n    metadata_iso_language_code as Search_metadata_iso_language_code,";
-	loadscript += "\r\n    user_id as Search_user_id,";
-	loadscript += "\r\n    user_name as Search_user_name,";
-	loadscript += "\r\n    user_screen_name as Search_user_screen_name,";
-	loadscript += "\r\n    user_location as Search_user_location,";
-	loadscript += "\r\n    '' as Search_user_profile_image_url,"; //user_profile_image_url
-	loadscript += "\r\n    '' as Search_user_description,"; //user_description
-	loadscript += "\r\n    '' as Search_user_url,"; //user_url
-	loadscript += "\r\n    user_geo_enabled as Search_user_geo_enabled,";
-	loadscript += "\r\n    user_protected as Search_user_protected,";
-	loadscript += "\r\n    user_followers_count as Search_user_followers_count,";
-	loadscript += "\r\n    user_friends_count as Search_user_friends_count,";
-	loadscript += "\r\n    user_listed_count as Search_user_listed_count,";
-	loadscript += "\r\n    user_favourites_count as Search_user_favourites_count,";
-	loadscript += "\r\n    user_statuses_count as Search_user_statuses_count,";
-	loadscript += "\r\n    user_created_at as Search_user_created_at,";
-	loadscript += "\r\n    timestamp#(mid(user_created_at, 9, 2) & '-' & mid(user_created_at, 5, 3) & '-' & mid(user_created_at, 27, 4) & ' ' & mid(user_created_at, 12, 8), 'DD-MMM-YYYY hh:mm:ss') as Search_user_user_created_at_timestamp,";
-	loadscript += "\r\n    date#(mid(user_created_at, 9, 2) & '-' & mid(user_created_at, 5, 3) & '-' & mid(user_created_at, 27, 4), 'DD-MMM-YYYY') as Search_user_user_created_at_date,";
-	loadscript += "\r\n    time#(mid(user_created_at, 12, 8), 'hh:mm:ss') as Search_user_user_created_at_time,";
-	loadscript += "\r\n    user_utc_offset as Search_user_utc_offset,";
-	loadscript += "\r\n    user_time_zone as Search_user_time_zone,";
-	loadscript += "\r\n    user_verified as Search_user_verified,";
-	loadscript += "\r\n    user_lang as Search_user_lang,";
-	loadscript += "\r\n    user_follow_request_sent as Search_user_follow_request_sent,";
-	loadscript += "\r\n    user_is_translator as Search_user_is_translator,";
-	loadscript += "\r\n    user_name as UserName,";
-	loadscript += "\r\n    user_name as Search_user_notifications";
-	loadscript += "\r\nFROM [lib://" + connectionTwitter.qName + "] (qvx) where possibly_sensitive='false';";
+function appendTwitter() {
+	//console.log("appendTwitter");
+	var twitterLoadscript ="";
+	twitterLoadscript += "\r\nTwitterConnectorV2_Search:";
+	twitterLoadscript += "\r\nLOAD DISTINCT";
+	twitterLoadscript += "\r\n    'Twitter' as datasource,";
+	twitterLoadscript += "\r\n    id as Search_id,";
+	twitterLoadscript += "\r\n    created_at as Search_created_at,";
+	twitterLoadscript += "\r\n    timestamp#(mid(created_at, 9, 2) & '-' & mid(created_at, 5, 3) & '-' & mid(created_at, 27, 4) & ' ' & mid(created_at, 12, 8), 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
+	twitterLoadscript += "\r\n    date#(mid(created_at, 9, 2) & '-' & mid(created_at, 5, 3) & '-' & mid(created_at, 27, 4), 'DD-MMM-YYYY') as Search_created_at_date,";
+	twitterLoadscript += "\r\n    time#(mid(created_at, 12, 8), 'hh:mm:ss') as Search_created_at_time,";
+	twitterLoadscript += "\r\n    hour(time#(mid(created_at, 12, 8), 'hh:mm:ss')) as hour,";
+	twitterLoadscript += "\r\n    text as Search_text,";
+	twitterLoadscript += "\r\n    if(left(text,2)<>'RT', id) as Search_Unique_id,";
+	twitterLoadscript += "\r\n    text_urlEncoded as Search_text_urlEncoded,";
+	twitterLoadscript += "\r\n    lang as Search_lang,";
+	twitterLoadscript += "\r\n    source as Search_source,";
+	twitterLoadscript += "\r\n    truncated as Search_truncated,";
+	twitterLoadscript += "\r\n    in_reply_to_screen_name as Search_in_reply_to_screen_name,";
+	twitterLoadscript += "\r\n    in_reply_to_status_id as Search_in_reply_to_status_id,";
+	twitterLoadscript += "\r\n    in_reply_to_user_id as Search_in_reply_to_user_id,";
+	twitterLoadscript += "\r\n    retweet_count as Search_retweet_count,";
+	twitterLoadscript += "\r\n    favorite_count as Search_favorite_count,";
+	twitterLoadscript += "\r\n    retweeted as Search_retweeted,";
+	twitterLoadscript += "\r\n    favorited as Search_favorited,";
+	twitterLoadscript += "\r\n    possibly_sensitive as Search_possibly_sensitive,";
+	twitterLoadscript += "\r\n    hashtag_count as Search_hashtag_count,";
+	twitterLoadscript += "\r\n    hash_tags as Search_hash_tags,";
+	twitterLoadscript += "\r\n    first_hash_tag as Search_first_hash_tag,";
+	twitterLoadscript += "\r\n    if(first_hash_tag<>'' and first_hash_tag<>'undefined', '#' & first_hash_tag) as Search_first_hash_tag_clean,";
+	twitterLoadscript += "\r\n    url_count as Search_url_count,";
+	twitterLoadscript += "\r\n    expanded_urls as Search_expanded_urls,";
+	twitterLoadscript += "\r\n    first_expanded_url as Search_first_expanded_url,";
+	twitterLoadscript += "\r\n    user_mentions_count as Search_user_mentions_count,";
+	twitterLoadscript += "\r\n    user_mentions as Search_user_mentions,";
+	twitterLoadscript += "\r\n    first_user_mention as Search_first_user_mention,";
+	twitterLoadscript += "\r\n    media_count as Search_media_count,";
+	twitterLoadscript += "\r\n    media_expanded_urls as Search_media_expanded_urls,";
+	twitterLoadscript += "\r\n    first_media_expanded_url as Search_first_media_expanded_url,";
+	twitterLoadscript += "\r\n    symbols_count as Search_symbols_count,";
+	twitterLoadscript += "\r\n    symbols as Search_symbols,";
+	twitterLoadscript += "\r\n    first_symbol as Search_first_symbol,";
+	twitterLoadscript += "\r\n    media_photo_count as Search_media_photo_count,";
+	twitterLoadscript += "\r\n    media_photo_urls as Search_media_photo_urls,";
+	twitterLoadscript += "\r\n    first_media_photo_url as Search_first_media_photo_url,";
+	twitterLoadscript += "\r\n    metadata_result_type as Search_metadata_result_type,";
+	twitterLoadscript += "\r\n    metadata_iso_language_code as Search_metadata_iso_language_code,";
+	twitterLoadscript += "\r\n    user_id as Search_user_id,";
+	twitterLoadscript += "\r\n    user_name as Search_user_name,";
+	twitterLoadscript += "\r\n    user_screen_name as Search_user_screen_name,";
+	twitterLoadscript += "\r\n    user_location as Search_user_location,";
+	twitterLoadscript += "\r\n    '' as Search_user_profile_image_url,"; //user_profile_image_url
+	twitterLoadscript += "\r\n    '' as Search_user_description,"; //user_description
+	twitterLoadscript += "\r\n    '' as Search_user_url,"; //user_url
+	twitterLoadscript += "\r\n    user_geo_enabled as Search_user_geo_enabled,";
+	twitterLoadscript += "\r\n    user_protected as Search_user_protected,";
+	twitterLoadscript += "\r\n    user_followers_count as Search_user_followers_count,";
+	twitterLoadscript += "\r\n    user_friends_count as Search_user_friends_count,";
+	twitterLoadscript += "\r\n    user_listed_count as Search_user_listed_count,";
+	twitterLoadscript += "\r\n    user_favourites_count as Search_user_favourites_count,";
+	twitterLoadscript += "\r\n    user_statuses_count as Search_user_statuses_count,";
+	twitterLoadscript += "\r\n    user_created_at as Search_user_created_at,";
+	twitterLoadscript += "\r\n    timestamp#(mid(user_created_at, 9, 2) & '-' & mid(user_created_at, 5, 3) & '-' & mid(user_created_at, 27, 4) & ' ' & mid(user_created_at, 12, 8), 'DD-MMM-YYYY hh:mm:ss') as Search_user_user_created_at_timestamp,";
+	twitterLoadscript += "\r\n    date#(mid(user_created_at, 9, 2) & '-' & mid(user_created_at, 5, 3) & '-' & mid(user_created_at, 27, 4), 'DD-MMM-YYYY') as Search_user_user_created_at_date,";
+	twitterLoadscript += "\r\n    time#(mid(user_created_at, 12, 8), 'hh:mm:ss') as Search_user_user_created_at_time,";
+	twitterLoadscript += "\r\n    user_utc_offset as Search_user_utc_offset,";
+	twitterLoadscript += "\r\n    user_time_zone as Search_user_time_zone,";
+	twitterLoadscript += "\r\n    user_verified as Search_user_verified,";
+	twitterLoadscript += "\r\n    user_lang as Search_user_lang,";
+	twitterLoadscript += "\r\n    user_follow_request_sent as Search_user_follow_request_sent,";
+	twitterLoadscript += "\r\n    user_is_translator as Search_user_is_translator,";
+	twitterLoadscript += "\r\n    user_name as UserName,";
+	twitterLoadscript += "\r\n    user_name as Search_user_notifications";
+	twitterLoadscript += "\r\nFROM [lib://" + connectionTwitter.qName + "] (qvx) where possibly_sensitive='false';";
 	
-	return loadscript;
+	return twitterLoadscript;
 }
 
-function appendReddit(loadscript) {
-	loadscript += "\r\nRedditSearch:";
-	loadscript += "\r\nLOAD";
-	loadscript += "\r\n    'Reddit' as datasource,";
-	loadscript += "\r\n    [data/name] as Search_id,";
-	loadscript += "\r\n    [data/created] as Search_created_at,";
-	loadscript += "\r\n    timestamp([data/created]/ 86400 + 25569, 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
-	loadscript += "\r\n    date(floor([data/created]/ 86400 + 25569), 'DD-MMM-YYYY') as Search_created_at_date,";
-	loadscript += "\r\n    time(frac([data/created]/ 86400 + 25569), 'hh:mm:ss') as Search_created_at_time,";
-	loadscript += "\r\n    hour(time(frac([data/created]/ 86400 + 25569), 'hh:mm:ss')) as hour,";
-	loadscript += "\r\n    [data/title] as Search_text,";
-	loadscript += "\r\n    if(left(text,2)<>'RT', [data/name]) as Search_Unique_id,";
-	loadscript += "\r\n    [data/selftext_html] as Search_text_urlEncoded,";
-	loadscript += "\r\n    'en' as Search_lang,";
-	loadscript += "\r\n    [data/subreddit_id] as Search_source,";
-	loadscript += "\r\n    [data/subreddit] as Search_truncated,";
-	loadscript += "\r\n    '' as Search_in_reply_to_screen_name,";
-	loadscript += "\r\n    '' as Search_in_reply_to_status_id,";
-	loadscript += "\r\n    '' as Search_in_reply_to_user_id,";
-	loadscript += "\r\n    [data/num_comments] as Search_retweet_count,";
-	loadscript += "\r\n    [data/url] as Search_favorite_count,";
-	loadscript += "\r\n    '' as Search_retweeted,";
-	loadscript += "\r\n    '' as Search_favorited,";
-	loadscript += "\r\n    [data/over_18] as Search_possibly_sensitive,";
-	loadscript += "\r\n    '' as Search_hashtag_count,";
-	loadscript += "\r\n    '' as Search_hash_tags,";
-	loadscript += "\r\n    '' as Search_first_hash_tag,";
-	loadscript += "\r\n    '' as Search_first_hash_tag_clean,";
-	loadscript += "\r\n    '' as Search_url_count,";
-	loadscript += "\r\n    '' as Search_expanded_urls,";
-	loadscript += "\r\n    '' as Search_first_expanded_url,";
-	loadscript += "\r\n    '' as Search_user_mentions_count,";
-	loadscript += "\r\n    '' as Search_user_mentions,";
-	loadscript += "\r\n    '' as Search_first_user_mention,";
-	loadscript += "\r\n    '' as Search_media_count,";
-	loadscript += "\r\n    '' as Search_media_expanded_urls,";
-	loadscript += "\r\n    [data/preview/images/source/url] as Search_first_media_expanded_url,";
-	loadscript += "\r\n    '' as Search_symbols_count,";
-	loadscript += "\r\n    '' as Search_symbols,";
-	loadscript += "\r\n    '' as Search_first_symbol,";
-	loadscript += "\r\n    '' as Search_media_photo_count,";
-	loadscript += "\r\n    '' as Search_media_photo_urls,";
-	loadscript += "\r\n    [data/preview/images/source/url] as Search_first_media_photo_url,";
-	loadscript += "\r\n    '' as Search_metadata_result_type,";
-	loadscript += "\r\n    'en' as Search_metadata_iso_language_code,";
-	loadscript += "\r\n    '' as Search_user_id,";
-	loadscript += "\r\n    [data/selftext] as Search_user_name,";
-	loadscript += "\r\n    [data/author] as Search_user_screen_name,";
-	loadscript += "\r\n    '' as Search_user_location,";
-	loadscript += "\r\n    '' as Search_user_profile_image_url,";
-	loadscript += "\r\n    '' as Search_user_description,";
-	loadscript += "\r\n    '' as Search_user_url,";
-	loadscript += "\r\n    '' as Search_user_geo_enabled,";
-	loadscript += "\r\n    '' as Search_user_protected,";
-	loadscript += "\r\n    '' as Search_user_followers_count,";
-	loadscript += "\r\n    '' as Search_user_friends_count,";
-	loadscript += "\r\n    '' as Search_user_listed_count,";
-	loadscript += "\r\n    '' as Search_user_favourites_count,";
-	loadscript += "\r\n    '' as Search_user_statuses_count,";
-	loadscript += "\r\n    '' as Search_user_created_at,";
-	loadscript += "\r\n    '' as Search_user_user_created_at_timestamp,";
-	loadscript += "\r\n    '' as Search_user_user_created_at_date,";
-	loadscript += "\r\n    '' as Search_user_user_created_at_time,";
-	loadscript += "\r\n    '' as Search_user_utc_offset,";
-	loadscript += "\r\n    '' as Search_user_time_zone,";
-	loadscript += "\r\n    '' as Search_user_verified,";
-	loadscript += "\r\n    'en' as Search_user_lang,";
-	loadscript += "\r\n    '' as Search_user_follow_request_sent,";
-	loadscript += "\r\n    '' as Search_user_is_translator,";
-	loadscript += "\r\n    [data/author] as UserName,";
-	loadscript += "\r\n    '' as Search_user_notifications";
-	loadscript += "\r\nFROM [lib://" + connectionReddit.qName + "]  (XmlSimple, Table is [DATA/data/children]);";
+function appendReddit() {
+	var redditLoadscript ="";
+	redditLoadscript += "\r\nRedditSearch:";
+	redditLoadscript += "\r\nLOAD";
+	redditLoadscript += "\r\n    'Reddit' as datasource,";
+	redditLoadscript += "\r\n    [data/name] as Search_id,";
+	redditLoadscript += "\r\n    [data/created] as Search_created_at,";
+	redditLoadscript += "\r\n    timestamp([data/created]/ 86400 + 25569, 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
+	redditLoadscript += "\r\n    date(floor([data/created]/ 86400 + 25569), 'DD-MMM-YYYY') as Search_created_at_date,";
+	redditLoadscript += "\r\n    time(frac([data/created]/ 86400 + 25569), 'hh:mm:ss') as Search_created_at_time,";
+	redditLoadscript += "\r\n    hour(time(frac([data/created]/ 86400 + 25569), 'hh:mm:ss')) as hour,";
+	redditLoadscript += "\r\n    [data/title] as Search_text,";
+	redditLoadscript += "\r\n    if(left(text,2)<>'RT', [data/name]) as Search_Unique_id,";
+	redditLoadscript += "\r\n    [data/selftext_html] as Search_text_urlEncoded,";
+	redditLoadscript += "\r\n    'en' as Search_lang,";
+	redditLoadscript += "\r\n    [data/subreddit_id] as Search_source,";
+	redditLoadscript += "\r\n    [data/subreddit] as Search_truncated,";
+	redditLoadscript += "\r\n    '' as Search_in_reply_to_screen_name,";
+	redditLoadscript += "\r\n    '' as Search_in_reply_to_status_id,";
+	redditLoadscript += "\r\n    '' as Search_in_reply_to_user_id,";
+	redditLoadscript += "\r\n    [data/num_comments] as Search_retweet_count,";
+	redditLoadscript += "\r\n    [data/url] as Search_favorite_count,";
+	redditLoadscript += "\r\n    '' as Search_retweeted,";
+	redditLoadscript += "\r\n    '' as Search_favorited,";
+	redditLoadscript += "\r\n    [data/over_18] as Search_possibly_sensitive,";
+	redditLoadscript += "\r\n    '' as Search_hashtag_count,";
+	redditLoadscript += "\r\n    '' as Search_hash_tags,";
+	redditLoadscript += "\r\n    '' as Search_first_hash_tag,";
+	redditLoadscript += "\r\n    '' as Search_first_hash_tag_clean,"; //Left(right([data/title], len([data/title])-index([data/title],'#',1)+1), index(right([data/title], len([data/title])-index([data/title],'#',1)+1),' ',1))
+	redditLoadscript += "\r\n    '' as Search_url_count,";
+	redditLoadscript += "\r\n    '' as Search_expanded_urls,";
+	redditLoadscript += "\r\n    '' as Search_first_expanded_url,";
+	redditLoadscript += "\r\n    '' as Search_user_mentions_count,";
+	redditLoadscript += "\r\n    '' as Search_user_mentions,";
+	redditLoadscript += "\r\n    '' as Search_first_user_mention,";
+	redditLoadscript += "\r\n    '' as Search_media_count,";
+	redditLoadscript += "\r\n    '' as Search_media_expanded_urls,";
+	redditLoadscript += "\r\n    [data/preview/images/source/url] as Search_first_media_expanded_url,";
+	redditLoadscript += "\r\n    '' as Search_symbols_count,";
+	redditLoadscript += "\r\n    '' as Search_symbols,";
+	redditLoadscript += "\r\n    '' as Search_first_symbol,";
+	redditLoadscript += "\r\n    '' as Search_media_photo_count,";
+	redditLoadscript += "\r\n    '' as Search_media_photo_urls,";
+	redditLoadscript += "\r\n    [data/preview/images/source/url] as Search_first_media_photo_url,";
+	redditLoadscript += "\r\n    '' as Search_metadata_result_type,";
+	redditLoadscript += "\r\n    'en' as Search_metadata_iso_language_code,";
+	redditLoadscript += "\r\n    '' as Search_user_id,";
+	redditLoadscript += "\r\n    [data/selftext] as Search_user_name,";
+	redditLoadscript += "\r\n    [data/author] as Search_user_screen_name,";
+	redditLoadscript += "\r\n    '' as Search_user_location,";
+	redditLoadscript += "\r\n    '' as Search_user_profile_image_url,";
+	redditLoadscript += "\r\n    '' as Search_user_description,";
+	redditLoadscript += "\r\n    '' as Search_user_url,";
+	redditLoadscript += "\r\n    '' as Search_user_geo_enabled,";
+	redditLoadscript += "\r\n    '' as Search_user_protected,";
+	redditLoadscript += "\r\n    '' as Search_user_followers_count,";
+	redditLoadscript += "\r\n    '' as Search_user_friends_count,";
+	redditLoadscript += "\r\n    '' as Search_user_listed_count,";
+	redditLoadscript += "\r\n    '' as Search_user_favourites_count,";
+	redditLoadscript += "\r\n    '' as Search_user_statuses_count,";
+	redditLoadscript += "\r\n    '' as Search_user_created_at,";
+	redditLoadscript += "\r\n    '' as Search_user_user_created_at_timestamp,";
+	redditLoadscript += "\r\n    '' as Search_user_user_created_at_date,";
+	redditLoadscript += "\r\n    '' as Search_user_user_created_at_time,";
+	redditLoadscript += "\r\n    '' as Search_user_utc_offset,";
+	redditLoadscript += "\r\n    '' as Search_user_time_zone,";
+	redditLoadscript += "\r\n    '' as Search_user_verified,";
+	redditLoadscript += "\r\n    'en' as Search_user_lang,";
+	redditLoadscript += "\r\n    '' as Search_user_follow_request_sent,";
+	redditLoadscript += "\r\n    '' as Search_user_is_translator,";
+	redditLoadscript += "\r\n    [data/author] as UserName,";
+	redditLoadscript += "\r\n    '' as Search_user_notifications";
+	redditLoadscript += "\r\nFROM [lib://" + connectionReddit.qName + "]  (XmlSimple, Table is [DATA/data/children]);";
 	
-	return loadscript;
+	return redditLoadscript;
 }
 
-function appendFacebook(loadscript) {
+function appendFacebook() {
 
-	loadscript += "\r\nFacebookSearch:";
-	loadscript += "\r\nLOAD";
-	loadscript += "\r\n    'Facebook' as datasource,";
-	loadscript += "\r\n    object_id as Search_id,";
-	loadscript += "\r\n    created_time as Search_created_at,";
-	loadscript += "\r\n    timestamp(timestamp#(date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') & ' ' & time#(left(subfield(created_time, 'T', 2),8), 'hh:mm:ss'), 'YYYY-MM-DD hh:mm:ss'), 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
-	loadscript += "\r\n    date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') as Search_created_at_date,";
-	loadscript += "\r\n    time#(subfield(created_time, 'T', 2), 'hh:mm:ss+0000') as Search_created_at_time,";
-	loadscript += "\r\n    hour(time(frac(created_time/ 86400 + 25569), 'hh:mm:ss')) as hour,";
-	loadscript += "\r\n    message as Search_text,";
-	loadscript += "\r\n    id as Search_Unique_id,";
-	loadscript += "\r\n    '' as Search_text_urlEncoded,";
-	loadscript += "\r\n    'en' as Search_lang,";
-	loadscript += "\r\n    '' as Search_source,";
-	loadscript += "\r\n    '' as Search_truncated,";
-	loadscript += "\r\n    '' as Search_in_reply_to_screen_name,";
-	loadscript += "\r\n    '' as Search_in_reply_to_status_id,";
-	loadscript += "\r\n    '' as Search_in_reply_to_user_id,";
-	loadscript += "\r\n    total_likes as Search_retweet_count,";
-	loadscript += "\r\n    shares as Search_favorite_count,";
-	loadscript += "\r\n    '' as Search_retweeted,";
-	loadscript += "\r\n    '' as Search_favorited,";
-	loadscript += "\r\n    '' as Search_possibly_sensitive,";
-	loadscript += "\r\n    '' as Search_hashtag_count,";
-	loadscript += "\r\n    '' as Search_hash_tags,";
-	loadscript += "\r\n    '' as Search_first_hash_tag,";
-	loadscript += "\r\n    '' as Search_first_hash_tag_clean,";
-	loadscript += "\r\n    '' as Search_url_count,";
-	loadscript += "\r\n    '' as Search_expanded_urls,";
-	loadscript += "\r\n    '' as Search_first_expanded_url,";
-	loadscript += "\r\n    '' as Search_user_mentions_count,";
-	loadscript += "\r\n    '' as Search_user_mentions,";
-	loadscript += "\r\n    '' as Search_first_user_mention,";
-	loadscript += "\r\n    '' as Search_media_count,";
-	loadscript += "\r\n    '' as Search_media_expanded_urls,";
-	loadscript += "\r\n    picture as Search_first_media_expanded_url,";
-	loadscript += "\r\n    '' as Search_symbols_count,";
-	loadscript += "\r\n    '' as Search_symbols,";
-	loadscript += "\r\n    '' as Search_first_symbol,";
-	loadscript += "\r\n    '' as Search_media_photo_count,";
-	loadscript += "\r\n    '' as Search_media_photo_urls,";
-	loadscript += "\r\n    picture as Search_first_media_photo_url,";
-	loadscript += "\r\n    '' as Search_metadata_result_type,";
-	loadscript += "\r\n    'en' as Search_metadata_iso_language_code,";
-	loadscript += "\r\n    '' as Search_user_id,";
-	loadscript += "\r\n    from_name as Search_user_name,";
-	loadscript += "\r\n    from_name as Search_user_screen_name,";
-	loadscript += "\r\n    '' as Search_user_location,";
-	loadscript += "\r\n    '' as Search_user_profile_image_url,";
-	loadscript += "\r\n    '' as Search_user_description,";
-	loadscript += "\r\n    '' as Search_user_url,";
-	loadscript += "\r\n    '' as Search_user_geo_enabled,";
-	loadscript += "\r\n    '' as Search_user_protected,";
-	loadscript += "\r\n    '' as Search_user_followers_count,";
-	loadscript += "\r\n    '' as Search_user_friends_count,";
-	loadscript += "\r\n    '' as Search_user_listed_count,";
-	loadscript += "\r\n    '' as Search_user_favourites_count,";
-	loadscript += "\r\n    '' as Search_user_statuses_count,";
-	loadscript += "\r\n    '' as Search_user_created_at,";
-	loadscript += "\r\n    '' as Search_user_user_created_at_timestamp,";
-	loadscript += "\r\n    '' as Search_user_user_created_at_date,";
-	loadscript += "\r\n    '' as Search_user_user_created_at_time,";
-	loadscript += "\r\n    '' as Search_user_utc_offset,";
-	loadscript += "\r\n    '' as Search_user_time_zone,";
-	loadscript += "\r\n    '' as Search_user_verified,";
-	loadscript += "\r\n    'en' as Search_user_lang,";
-	loadscript += "\r\n    '' as Search_user_follow_request_sent,";
-	loadscript += "\r\n    '' as Search_user_is_translator,";
-	loadscript += "\r\n    from_name as UserName,";
-	loadscript += "\r\n    '' as Search_user_notifications";
-	loadscript += "\r\nFROM [lib://" + connectionFacebook.qName + "]  (qvx);";
+	var fbLoadscript="";
+	fbLoadscript += "\r\nFacebookSearch:";
+	fbLoadscript += "\r\nLOAD";
+	fbLoadscript += "\r\n    'Facebook' as datasource,";
+	fbLoadscript += "\r\n    object_id as Search_id,";
+	fbLoadscript += "\r\n    created_time as Search_created_at,";
+	fbLoadscript += "\r\n    timestamp(timestamp#(date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') & ' ' & time#(left(subfield(created_time, 'T', 2),8), 'hh:mm:ss'), 'YYYY-MM-DD hh:mm:ss'), 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
+	fbLoadscript += "\r\n    date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') as Search_created_at_date,";
+	fbLoadscript += "\r\n    time#(subfield(created_time, 'T', 2), 'hh:mm:ss+0000') as Search_created_at_time,";
+	fbLoadscript += "\r\n    num(left(time#(subfield(created_time, 'T', 2), 'hh:mm:ss+0000'),2)) as hour,";
+	fbLoadscript += "\r\n    message as Search_text,";
+	fbLoadscript += "\r\n    id as Search_Unique_id,";
+	fbLoadscript += "\r\n    '' as Search_text_urlEncoded,";
+	fbLoadscript += "\r\n    'en' as Search_lang,";
+	fbLoadscript += "\r\n    '' as Search_source,";
+	fbLoadscript += "\r\n    '' as Search_truncated,";
+	fbLoadscript += "\r\n    '' as Search_in_reply_to_screen_name,";
+	fbLoadscript += "\r\n    '' as Search_in_reply_to_status_id,";
+	fbLoadscript += "\r\n    '' as Search_in_reply_to_user_id,";
+	fbLoadscript += "\r\n    total_likes as Search_retweet_count,";
+	fbLoadscript += "\r\n    shares as Search_favorite_count,";
+	fbLoadscript += "\r\n    '' as Search_retweeted,";
+	fbLoadscript += "\r\n    '' as Search_favorited,";
+	fbLoadscript += "\r\n    '' as Search_possibly_sensitive,";
+	fbLoadscript += "\r\n    '' as Search_hashtag_count,";
+	fbLoadscript += "\r\n    '' as Search_hash_tags,";
+	fbLoadscript += "\r\n    '' as Search_first_hash_tag,";
+	fbLoadscript += "\r\n    if(index(message, '#')>0,purgechar(Left(right(message, len(message)-index(message,'#',1)+1), index(right(message, len(message)-index(message,'#',1)+1),' ',1)), ': ,;')) as Search_first_hash_tag_clean,"; //Left(right(message, len(message)-index(message,'#',1)+1), index(right(message, len(message)-index(message,'#',1)+1),' ',1))
+	fbLoadscript += "\r\n    '' as Search_url_count,";
+	fbLoadscript += "\r\n    '' as Search_expanded_urls,";
+	fbLoadscript += "\r\n    '' as Search_first_expanded_url,";
+	fbLoadscript += "\r\n    '' as Search_user_mentions_count,";
+	fbLoadscript += "\r\n    '' as Search_user_mentions,";
+	fbLoadscript += "\r\n    '' as Search_first_user_mention,";
+	fbLoadscript += "\r\n    '' as Search_media_count,";
+	fbLoadscript += "\r\n    '' as Search_media_expanded_urls,";
+	fbLoadscript += "\r\n    picture as Search_first_media_expanded_url,";
+	fbLoadscript += "\r\n    '' as Search_symbols_count,";
+	fbLoadscript += "\r\n    '' as Search_symbols,";
+	fbLoadscript += "\r\n    '' as Search_first_symbol,";
+	fbLoadscript += "\r\n    '' as Search_media_photo_count,";
+	fbLoadscript += "\r\n    '' as Search_media_photo_urls,";
+	fbLoadscript += "\r\n    picture as Search_first_media_photo_url,";
+	fbLoadscript += "\r\n    '' as Search_metadata_result_type,";
+	fbLoadscript += "\r\n    'en' as Search_metadata_iso_language_code,";
+	fbLoadscript += "\r\n    '' as Search_user_id,";
+	fbLoadscript += "\r\n    from_name as Search_user_name,";
+	fbLoadscript += "\r\n    from_name as Search_user_screen_name,";
+	fbLoadscript += "\r\n    '' as Search_user_location,";
+	fbLoadscript += "\r\n    '' as Search_user_profile_image_url,"; ////////////////////
+	fbLoadscript += "\r\n    to_name as Search_user_description,"; /////////////////////////
+	fbLoadscript += "\r\n    type as Search_user_url,"; ////////////////////////
+	fbLoadscript += "\r\n    '' as Search_user_geo_enabled,";
+	fbLoadscript += "\r\n    '' as Search_user_protected,";
+	fbLoadscript += "\r\n    '' as Search_user_followers_count,";
+	fbLoadscript += "\r\n    '' as Search_user_friends_count,";
+	fbLoadscript += "\r\n    '' as Search_user_listed_count,";
+	fbLoadscript += "\r\n    '' as Search_user_favourites_count,";
+	fbLoadscript += "\r\n    '' as Search_user_statuses_count,";
+	fbLoadscript += "\r\n    '' as Search_user_created_at,";
+	fbLoadscript += "\r\n    '' as Search_user_user_created_at_timestamp,";
+	fbLoadscript += "\r\n    '' as Search_user_user_created_at_date,";
+	fbLoadscript += "\r\n    '' as Search_user_user_created_at_time,";
+	fbLoadscript += "\r\n    '' as Search_user_utc_offset,";
+	fbLoadscript += "\r\n    '' as Search_user_time_zone,";
+	fbLoadscript += "\r\n    '' as Search_user_verified,";
+	fbLoadscript += "\r\n    'en' as Search_user_lang,";
+	fbLoadscript += "\r\n    '' as Search_user_follow_request_sent,";
+	fbLoadscript += "\r\n    '' as Search_user_is_translator,";
+	fbLoadscript += "\r\n    from_name as UserName,";
+	fbLoadscript += "\r\n    '' as Search_user_notifications";
+	fbLoadscript += "\r\nFROM [lib://" + connectionFacebook.qName + "]  (qvx);";
 	
-	return loadscript;
+	return fbLoadscript;
 }
 
 	$("#buttonTwitter").click(function() {

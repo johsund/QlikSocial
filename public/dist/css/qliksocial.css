@@ -1,6 +1,7 @@
 :root {
   --main-color: #449d44;
   --main-hover-color: #116a11;
+  --main-selection-color: #d3ffc6;
 }
 
 .hidden {
@@ -77,6 +78,9 @@ opacity: 1.0;
 		font-size: 12px;
 		padding-top: 20px;
 		width: 100%;
+		-webkit-user-select:none;
+		-moz-user-select:none;
+		-ms-user-select:none;
 	  
 		tr {
 			background-color: white !important;
@@ -141,6 +145,12 @@ opacity: 1.0;
 .three-col-table tr:hover td:nth-child(2) .qlikbarprogress-bar {
 			background: #116a11;
 			background: var(--main-hover-color);
+}
+
+.three-col-table .highlighting {
+	font-weight:900;
+	background: #d3ffc6;
+	background: var(--main-selection-color);
 }
 
 #analyticsPane .heading {
