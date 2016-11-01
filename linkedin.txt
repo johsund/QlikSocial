@@ -1,0 +1,10 @@
+LinkedIn:
+https://developer.linkedin.com/docs/company-pages
+
+	1. Get Company's updates
+	2. Loop through and "Get a specific Company update"
+	3. Loop through and "Get comments for a specific company update"
+	3a. "Get likes for a specific company update"
+
+App: 30K request per day
+User: 700 request per day

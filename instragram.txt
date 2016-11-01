@@ -1,0 +1,5 @@
+Instragram:
+
+
+CLIENT STATUS	RATE LIMIT
+Sandbox	500 / hour

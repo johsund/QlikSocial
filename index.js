@@ -15,6 +15,10 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
+// app.use(function (req, res, next) {
+	    // // Website you wish to allow to connect
+    // res.setHeader('Access-Control-Allow-Origin', 'http://www.sentiment140.com/');
+// });
 
 function getTicket(req, res, next) {
 

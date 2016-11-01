@@ -159,6 +159,10 @@ var tooltipRange = $('<div id="tooltipRange" style="color:#3c763d" />').css({
 		});	
 	}
 
+// $.get("http://www.sentiment140.com/api/classify?text=awesome%20wonderful%20great%20Was%20the%20season%20premiere%20of%20TWD%20killer%20or%20what?%20Check%20out%20our%20app%20to%20see%20how%20tonight%27s%20walker%20kill%20count%20compares%20to%20past%20seasons:%20http://bit.ly/1TC1VFk&query=new+moon&language=en&appid=ftn@qlik", function(data) {
+	// console.log(data);
+// });
+
 	
 	$("#searchButton").click(function() {
 		
@@ -228,12 +232,6 @@ function create(global) {
 	//console.log('&maxNoPages='+$("#tooltip").text()+'&appID=');
 	
 
-
-
-
-	//var hasLabels = msg.header === true ? 'embedded labels' : 'no labels';
-	//var transpose = msg.transpose === true ? ' ,filters(Transpose()) ' : '';
-
 	var twitter = true;
 	
 	loadscript = "";
@@ -242,6 +240,8 @@ function create(global) {
 	console.log($("#buttonTwitter").attr('checked'));
 	
 	var sourceCounter  = 0;
+	
+
 	
 	if($("#buttonTwitter").attr('checked')) {
 		sourceCounter += 1;
@@ -253,9 +253,14 @@ function create(global) {
 			//console.log(localTweets);
 		}
 		
+		console.log($("#tooltip").text().length);
+		var twitterPages;
+		if($("#tooltip").text().length==0) {twitterPages=3;} else {twitterPages=$("#tooltip").text();}
+		console.log(twitterPages);
+		
 		connectionTwitter = {
 			qName: 'QlikSocial Twitter' + ' ' + Date.now(),
-			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&maxNoPages='+$("#tooltip").text()+'&appID=',
+			qConnectionString: 'http://'+qlikWebConnectorHost+':5555/data?connectorID=TwitterConnector&table=Search&searchTerm=' + $("#searchObject").val().split(' ').join('+') + localTweets + '&count=100&maxNoPages='+twitterPages+'&appID=',
 			qType: 'internet'
 		};	
 		//console.log(loadscript.length);
@@ -307,7 +312,18 @@ function create(global) {
 		//console.log(loadscript);		
 		//console.log(connectionReddit);
 	}		
-		
+	
+	if($("#buttonSentiment").attr('checked')) {
+		connectionSentiment = {
+			qName: 'QlikSocial Sentiment' + ' ' + Date.now(),
+			qConnectionString: 'CUSTOM CONNECT TO "provider=QvRestConnector.exe;url=http://www.sentiment140.com/api/classify?text%2&query%2&appid%2&language%2;timeout=30;method=GET;autoDetectResponseType=true;keyGenerationStrategy=-1;useWindowsAuthentication=false;forceAuthenticationType=false;useCertificate=No;certificateStoreLocation=LocalMachine;certificateStoreName=My;queryParameters=text%2;PaginationType=Custom;OffsetStartField=Sentiment;IsOffsetStartFieldHeader=false;OffsetStartFieldValue=1;OffsetCountFieldName=Sentiment;IsOffsetCountFieldHeader=false;"',
+			qType: 'QvRestConnector.exe'
+		};	
+		loadscript += appendSentiment();
+	}
+	
+	loadscript += appendWordFilter();
+	
 	//if(sourceCounter>1) {
 		$(".container").fadeTo( "slow" , 0.5, function() {
 		// Animation complete.
@@ -411,6 +427,9 @@ function createConnections(handle) {
 		$(document.getElementById('progressBar')).width('20%');
 		return new Promise(function(resolve, reject) {
 			//handle.createConnection(connectionTwitter).then(function() {
+				if($("#buttonSentiment").attr('checked')) {
+					handle.createConnection(connectionSentiment);
+				}
 				if($("#buttonTwitter").attr('checked')) {
 					handle.createConnection(connectionTwitter);
 				}
@@ -524,7 +543,7 @@ function buildUI(handle) {
 function appendTwitter() {
 	//console.log("appendTwitter");
 	var twitterLoadscript ="";
-	twitterLoadscript += "\r\nTwitterConnectorV2_Search:";
+	twitterLoadscript += "\r\nDataTable:";
 	twitterLoadscript += "\r\nLOAD DISTINCT";
 	twitterLoadscript += "\r\n    'Twitter' as datasource,";
 	twitterLoadscript += "\r\n    id as Search_id,";
@@ -601,7 +620,7 @@ function appendTwitter() {
 
 function appendReddit() {
 	var redditLoadscript ="";
-	redditLoadscript += "\r\nRedditSearch:";
+	redditLoadscript += "\r\nDataTable:";
 	redditLoadscript += "\r\nLOAD";
 	redditLoadscript += "\r\n    'Reddit' as datasource,";
 	redditLoadscript += "\r\n    [data/name] as Search_id,";
@@ -679,10 +698,10 @@ function appendReddit() {
 function appendFacebook() {
 
 	var fbLoadscript="";
-	fbLoadscript += "\r\nFacebookSearch:";
+	fbLoadscript += "\r\nDataTable:";
 	fbLoadscript += "\r\nLOAD";
 	fbLoadscript += "\r\n    'Facebook' as datasource,";
-	fbLoadscript += "\r\n    object_id as Search_id,";
+	fbLoadscript += "\r\n    id as Search_id,"; //object_id
 	fbLoadscript += "\r\n    created_time as Search_created_at,";
 	fbLoadscript += "\r\n    timestamp(timestamp#(date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') & ' ' & time#(left(subfield(created_time, 'T', 2),8), 'hh:mm:ss'), 'YYYY-MM-DD hh:mm:ss'), 'DD-MMM-YYYY hh:mm:ss') as Search_created_at_timestamp,";
 	fbLoadscript += "\r\n    date#(subfield(created_time, 'T', 1), 'YYYY-MM-DD') as Search_created_at_date,";
@@ -697,8 +716,8 @@ function appendFacebook() {
 	fbLoadscript += "\r\n    '' as Search_in_reply_to_screen_name,";
 	fbLoadscript += "\r\n    '' as Search_in_reply_to_status_id,";
 	fbLoadscript += "\r\n    '' as Search_in_reply_to_user_id,";
-	fbLoadscript += "\r\n    total_likes as Search_retweet_count,";
-	fbLoadscript += "\r\n    shares as Search_favorite_count,";
+	fbLoadscript += "\r\n    if(len(total_likes)=0, 0, total_likes) as Search_retweet_count,";
+	fbLoadscript += "\r\n    if(len(shares)=0, 0, shares) as Search_favorite_count,";
 	fbLoadscript += "\r\n    '' as Search_retweeted,";
 	fbLoadscript += "\r\n    '' as Search_favorited,";
 	fbLoadscript += "\r\n    '' as Search_possibly_sensitive,";
@@ -754,6 +773,83 @@ function appendFacebook() {
 	return fbLoadscript;
 }
 
+function appendSentiment() {
+
+	var purgeChars = '#{}(&)@?[]\"';
+
+	var sentimentLoadscript="";
+	sentimentLoadscript += "\r\nLIB CONNECT TO '"+connectionSentiment.qName+"';";
+	sentimentLoadscript += "\r\nSet ErrorMode = 0;";	
+	sentimentLoadscript += "\r\nSet vLanguage = 'en';";
+	sentimentLoadscript += "\r\nLet startAt = 0;";
+	sentimentLoadscript += "\r\nLet vLoop = (NoOfRows('DataTable')-1) ;";
+	sentimentLoadscript += "\r\nSet vappid = 'jsn@qlik.com'; ";
+	sentimentLoadscript += "\r\n[Sentimentresults]:";
+	sentimentLoadscript += "\r\nLOAD 1 as dummy";
+	sentimentLoadscript += "\r\nautogenerate(1);";
+	sentimentLoadscript += "\r\nfor startAt = 0 to vLoop";
+	sentimentLoadscript += "\r\n  Let vID = peek('Search_id',$(startAt),'DataTable');";
+	sentimentLoadscript += "\r\n  Let vText = Replace(Replace(purgechar(peek('Search_text',$(startAt),'DataTable'), '"+purgeChars+"'),' ','+'), chr(10), ' ');";
+	sentimentLoadscript += "\r\n    concatenate (Sentimentresults)";
+	sentimentLoadscript += "\r\n    Load ";
+	sentimentLoadscript += "\r\n     '$(vID)' as Search_id,";	
+	sentimentLoadscript += "\r\n      \"Search_text\" as SentimentText,";
+	sentimentLoadscript += "\r\n      \"polarity\" as Score,";
+	sentimentLoadscript += "\r\n      IF(\"polarity\"=0,'Negative',IF(\"polarity\"=2,'Neutral',IF(\"polarity\"=4,'Positive'))) as Sentiment;   ";
+	sentimentLoadscript += "\r\n    SQL SELECT ";
+	sentimentLoadscript += "\r\n        \"Search_text\",";
+	sentimentLoadscript += "\r\n        \"polarity\",";
+	sentimentLoadscript += "\r\n        \"query\"";
+	sentimentLoadscript += '\r\n    FROM JSON (wrap off) "results"';
+	sentimentLoadscript += '\r\n    WITH CONNECTION(Url "http://www.sentiment140.com/api/classify?text=$(vText)&language=$(vLanguage)&appid=$(vappid)");';
+	sentimentLoadscript += "\r\nif ScriptErrorCount>=5 then";
+	sentimentLoadscript += "\r\nexit for;";
+	sentimentLoadscript += "\r\nend if";	
+	sentimentLoadscript += "\r\nNEXT startAt;";
+	sentimentLoadscript += "\r\nDrop field dummy;";
+	
+	return sentimentLoadscript;
+}
+
+function appendWordFilter() {
+	
+	var purgeChars = '#{}(&)@?[]\",.:;-=_';
+
+	var wordArray = ['de','has','are','the','be','to','of','and','a','in','that','have','i','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','people','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us', 'rt'];
+	console.log(wordArray.length);
+	var appendWordFilterLoadscript="";
+	//appendWordFilterLoadscript += "\r\nLIB CONNECT TO '"+connectionSentiment.qName+"';";
+	appendWordFilterLoadscript += "\r\n";	
+	appendWordFilterLoadscript += "\r\nWordDictionary:";
+	appendWordFilterLoadscript += "\r\nLoad * Inline [";
+	appendWordFilterLoadscript += "\r\nWords";
+
+	$.each(wordArray, function(index) {
+		if(index!=wordArray.length-1){
+			appendWordFilterLoadscript += "\r\n"+wordArray[index]+",";			
+		}
+		else {
+			appendWordFilterLoadscript += "\r\n"+wordArray[index];	
+		}
+
+	});	
+	
+	appendWordFilterLoadscript += "\r\n];";
+	
+	appendWordFilterLoadscript += "\r\nDummyTable1:";
+	appendWordFilterLoadscript += "\r\nLoad";
+	appendWordFilterLoadscript += "\r\n1 as DummyValue,";
+	appendWordFilterLoadscript += "\r\nSearch_id,";
+	appendWordFilterLoadscript += "\r\nlower(trim(purgechar(subfield(Search_text,' '), '"+purgeChars+"'))) as Keyword";
+	appendWordFilterLoadscript += "\r\nresident DataTable;";
+	appendWordFilterLoadscript += "\r\nLoad Search_id, Keyword resident DummyTable1";
+	appendWordFilterLoadscript += "\r\nwhere not exists (Words, Keyword) and len(Keyword)>0;";
+	appendWordFilterLoadscript += "\r\nDrop table DummyTable1;";
+	appendWordFilterLoadscript += "\r\nDrop table WordDictionary;";
+
+	return appendWordFilterLoadscript;
+}
+
 	$("#buttonTwitter").click(function() {
 		if ($("#buttonTwitter").attr('checked')) {
 			$("#buttonTwitter").removeAttr('checked');
@@ -790,6 +886,18 @@ function appendFacebook() {
 		//$("#tooltip").toggleClass("hidden");
 		$("#panelReddit").toggleClass("panel-success");	
 	});
+	$("#buttonSentiment").click(function() {
+		if ($("#buttonSentiment").attr('checked')) {
+			$("#buttonSentiment").removeAttr('checked');
+		} else {
+			$("#buttonSentiment").attr('checked', 'checked');
+		}		
+		$("#checkSentiment").toggleClass("hidden");
+		$("#sentimentSelected").toggleClass("hidden");
+		//$("#sliderPages").toggleClass("hidden");
+		//$("#tooltip").toggleClass("hidden");
+		$("#panelSentiment").toggleClass("panel-success");	
+	});	
 	$("#buttonFacebook").click(function() {
 		if ($("#buttonFacebook").attr('checked')) {
 			$("#buttonFacebook").removeAttr('checked');

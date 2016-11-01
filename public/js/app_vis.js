@@ -28,10 +28,11 @@ var getUrlParameter = function getUrlParameter(sParam) {
 
 window.onresize = refreshAllCharts;
 
+//$(document).ready(refreshAllCharts);
+
 function refreshAllCharts() {
-	
+	console.log("Resizing all!");
 	pubsub.publish('update');
-    //do a load of stuff
 }
  
 qsocks.Connect(config).then(function(global) {
@@ -54,8 +55,8 @@ global.getDocList().then(function(docList) {
 	//Setting up search
 	senseSearch.connectWithQSocks(app); 
 	var inputOptions = {          
-	  "searchFields": ["Search_text"],
-	  "suggestFields": ["Search_text"]
+	  "searchFields": ["Search_text", "datasource"],
+	  "suggestFields": ["Search_text", "datasource"]
 	}
 	senseSearch.inputs["myInput"].attach(inputOptions);
 	senseSearch.searchResults.subscribe(function(){
@@ -160,7 +161,7 @@ global.getDocList().then(function(docList) {
 		
 		var charteight = new D3Scatter([{
 		  'dim': 'Search_id',
-		  'label': 'FacebookPost'
+		  'label': 'Facebook Post'
 		}], [{
 		  'label': 'Shares',
 		  'value': '=Max({$<datasource={"Facebook"}>} Search_favorite_count)'
@@ -175,7 +176,17 @@ global.getDocList().then(function(docList) {
 		}], {
 		  'label': '# of posts',
 		  'value': 'count(Search_id)'
-		}, document.getElementById('chartnine'));			
+		}, document.getElementById('chartnine'));	
+
+		var chartten= new Table([{
+		  'dim': 'Sentiment',
+		  'label': 'Sentiment'
+		}], {
+		  'label': ' ',
+		  'value': 'count(Score)'
+		}, document.getElementById('chartten'));		
+		
+		var charteleven = new WordCloud('Keyword', 'count(Search_id)', document.getElementById('charteleven'));
 		
 		//chartfour
 		
@@ -195,6 +206,9 @@ global.getDocList().then(function(docList) {
 
 function Table(dimensions, expression, element, sorting) {
 
+
+
+	
 	var sort, interSortOrder;
 	interSortOrder = [1,0]; //sort by measure first by default
 	if (typeof sorting === 'undefined') { sort = {
@@ -273,6 +287,16 @@ function Table(dimensions, expression, element, sorting) {
 			/**
 			 * No Data available - return error.
 			 */
+			 //if(dimensions[0].dim=='Sentiment') {
+				//console.log(layout);
+			 //}
+			 
+			if(dimensions[0].dim=='Sentiment' && layout.qHyperCube.qSize.qcy >0) {
+				console.log(dimensions[0].dim);		
+				$(element).css('border', '1px solid');
+				$(element).css('border-color', '#e5e6e9 #dfe0e4 #d0d1d5');
+			}			 
+			 
 			if(layout.qHyperCube.qDataPages[0].qMatrix[0][0].qIsEmpty) {
 				return $('<p>No Mentions Available</p>').appendTo($(element));
 			};
@@ -448,6 +472,7 @@ function Table(dimensions, expression, element, sorting) {
 
 
  
+
 
 /**
  * jQuery plugin to toggle visibility on filter counters
@@ -720,7 +745,7 @@ function Filter(field, label, element, shouldsearch) {
  
 function D3Bar(dimensions, expression, element) {
 
-	//console.log("D3Bar fired");
+	//console.log(element);
 	var cube, max;
 
 	var dimensionList = dimensions.map(function(d) {
@@ -782,20 +807,27 @@ function D3Bar(dimensions, expression, element) {
 		 * Fetch Layout/Data
 		 */
 		cube.getLayout().then(function(layout) {
+			
+			//console.log(element.offsetWidth);
+			//console.log($(element).width());
 			$(element).empty();
 
 		//console.log(layout.qHyperCube.qDataPages[0].qMatrix.length);
 		var data = layout.qHyperCube.qDataPages[0].qMatrix;
 //		console.log(data);
-//console.log(element);
+//console.log($(element)[0].id);
 
 			//var calcWidth = layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : layout.qHyperCube.qDataPages[0].qMatrix.length*30;
-			var calcWidth = layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : $(element).width();
+			// var calcWidth = $(element).width(); //layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : $(element).width();
 
-			//$(element).width(calcWidth);
+			// //$(element).width(calcWidth);
+			// console.log($(element)[0].id);
+			// var elementObject = "'" + $(element)[0].id + "'";
+			// var testing = document.getElementById($(element)[0].id);
+			// console.log(testing.width);
 
 			var margin = {top: 20, right: 20, bottom: 30, left: 40},
-				width = calcWidth - margin.left - margin.right,
+				width = $(element).width() - margin.left - margin.right,
 				height = $(element).height() - margin.top - margin.bottom;
 
 			var x = d3.scale.ordinal()
@@ -819,6 +851,7 @@ function D3Bar(dimensions, expression, element) {
 			  .append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+			//console.log(svg);
 
 			x.domain(data.map(function(d) { return d[0].qText; }));
 			y.domain([0, d3.max(data, function(d) { return d[1].qNum; })]);
@@ -978,6 +1011,8 @@ function D3Bar(dimensions, expression, element) {
 			//var calcWidth = layout.qHyperCube.qDataPages[0].qMatrix.length < 5 ? 300 : layout.qHyperCube.qDataPages[0].qMatrix.length*30;
 
 			//$(element).width(calcWidth);
+			//console.log(element);
+			//console.log(d3.select(element));
 
 			var margin = {top: 20, right: 20, bottom: 30, left: 60},
 				width = $(element).width() - margin.left - margin.right,
@@ -1029,7 +1064,8 @@ function D3Bar(dimensions, expression, element) {
 			var lasso_end = function() {
 			  // Reset the color of all dots
 			  lasso.items()
-				 .style("fill", "#5cb85c");
+				 .style("fill", "#5cb85c")
+				 .style("fill", "var(--main-color)");
 
 			  // Style the selected dots
 			  lasso.items().filter(function(d) {return d.selected===true})
@@ -1043,15 +1079,20 @@ function D3Bar(dimensions, expression, element) {
 				
 				var selectedItems = lasso.items().filter(function(d) {return d.selected===true});	
 				if (selectedItems[0].length > 0) {
-					console.log(selectedItems);
-					console.log(selectedItems[0]);
+					//console.log(selectedItems);
+					//console.log(selectedItems[0]);
+					//console.log(element);					
 					// Set up an array to store the data points in the selected hexagon
 					var selectarray = [];
 					//Push the Dim1_key from the data array to get the unique selected values
 					for (index = 0; index < selectedItems[0].length; index++) {
 						//for (item = 0; item < selectedItems[0][index].__data__.length; item++) {
-							console.log(selectedItems[0][index].id);
-							selectarray.push(parseInt(selectedItems[0][index].id));	
+
+							//console.log(selectedItems[0][index].parentNode.parentNode.parentNode.id);
+							//console.log(selectedItems[0][index].id);
+							if(element.id==selectedItems[0][index].parentNode.parentNode.parentNode.id) {
+								selectarray.push(parseInt(selectedItems[0][index].id));	
+							}
 						//}
 					}
 					console.log(selectarray);
@@ -1166,6 +1207,227 @@ function D3Bar(dimensions, expression, element) {
 
 }; 
 //////  End of function D3Scatter
+
+/////// WORDCLOUD ///////////
+
+
+function WordCloud(dimension, expression, element) {
+
+	var cube;
+	//console.log("FIRED");
+
+
+
+	//console.log(w, h);
+	//console.log(window.innerWidth /2 *.8);
+	$('<div style="font-weight:bold;font-size:12px;">Most common words</div>').appendTo(element);
+	var svg = d3.select(element).append("svg").attr("id", "svgwordcloud");
+
+	var max,
+		min,
+		scale = 1,
+		maxFont = 42;
+
+	app.createSessionObject({
+		"qInfo": {
+			"qId": "",
+			"qType": "HyperCube"
+		},
+		"qHyperCubeDef": {
+			"qDimensions": [{
+				"qNullSuppression": true,
+				"qDef": {
+					"qFieldDefs": [dimension],
+					"qFieldLabels": ['Test'],
+					"qSortCriterias": [{
+						"qSortByNumeric": -1
+					}]
+				}
+			}],
+			"qMeasures": [{
+				"qLibraryId": "",
+				"qSortBy": {
+					"qSortByNumeric": -1
+				},
+				"qDef": {
+					"qLabel": "",
+					"qDescription": "",
+					"qDef": expression
+				}
+			}],
+			"qSuppressMissing": true,
+			"qSuppressZero": true,
+			"qInterColumnSortOrder": [1, 0],
+			"qInitialDataFetch": [{
+				qTop: 0,
+				qLeft: 0,
+				qHeight: 50,
+				qWidth: 2
+			}]
+		}
+	}).then(function(reply) {
+		cube = reply;
+		//console.log(reply);
+		render();
+	});
+
+	function render() {
+		cube.getLayout().then(function(layout) {
+			//console.log(layout);
+		var w = window.innerWidth /2 *.8;//$(element).width();//element.offsetWidth;
+		var h = 330;//$(element).width();//element.offsetWidth;
+	
+			svg.attr("width", w).attr("height", h);
+			svg.selectAll('*').remove();
+
+			if (layout.qHyperCube.qSize.qcy === 0) {
+
+				svg.append('text')
+					.attr("text-anchor", "middle")
+					.attr("transform", function(d) {
+						return "translate(" + [w / 2, h / 2] + ")";
+					})
+					.style("font-size", '16px')
+					.style("fill", 'rgb(39, 48, 81)')
+					.text('No Keywords Available');
+				
+				return;
+			};
+
+			max = d3.max(layout.qHyperCube.qDataPages[0].qMatrix.map(function(d) {
+				return d[1].qNum;
+			}));
+			min = d3.min(layout.qHyperCube.qDataPages[0].qMatrix.map(function(d) {
+				return d[1].qNum;
+			}));
+
+			var fontSize = d3.scale.log().range([16, maxFont]);
+			fontSize.domain([min, max]);
+
+			var opacityScale = d3.scale.linear().range([60, 100]).domain([min, max]);
+
+			var data = layout.qHyperCube.qDataPages[0].qMatrix.map(function(d) {
+				return {
+					key: d[0].qText,
+					size: d[1].qNum,
+					value: d[1].qNum,
+					qElem: d[0].qElemNumber
+				}
+			});
+
+			//console.log(data);
+
+			var vis = svg.append("g")
+				.attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
+
+			//console.log("still alive");	
+				
+			d3.layout.cloud()
+				.words(data)
+				.timeInterval(10)
+				.padding(2)
+				.size([w, h])
+				.fontWeight('bold')
+				.spiral('rectangular')
+				.font('Impact')
+				.fontSize(function(d) {
+					if (layout.qHyperCube.qDataPages[0].qMatrix.length != 1) {
+						//console.log("x");
+						return fontSize(+d.size);
+					} else {
+						//console.log("y");
+						return maxFont;
+					}
+				})
+				.rotate(0)
+				.text(function(d) {
+					return d.key;
+				})
+				.on("end", draw)
+				.start();
+
+			function draw(data, bounds, qv) {
+				//console.log("draw triggered");
+				svg.selectAll('text').remove();
+				
+				scale = bounds ? Math.min(
+					w / Math.abs(bounds[1].x - w / 2),
+					w / Math.abs(bounds[0].x - w / 2),
+					h / Math.abs(bounds[1].y - h / 2),
+					h / Math.abs(bounds[0].y - h / 2)) / 2 : 1;
+
+				var text = vis.selectAll("text")
+					.data(data, function(d) {
+						return d.text;
+					});
+					//console.log("test");
+
+				text.enter().append("text")
+					.on("click", function(d) {
+						select(d.qElem);
+					})
+					.attr("class", "hash")
+					.attr("text-anchor", "middle")
+					.attr("transform", function(d) {
+						return "translate(" + [d.x, d.y] + ")";
+					})
+					.style("font-size", function(d) {
+						return d.size + "px";
+					})
+					.style("cursor", "pointer")
+					.style('opacity', function(d) {
+						return layout.qHyperCube.qDataPages[0].qMatrix.length > 1 ? opacityScale(d.value) / 100 : 1;
+					})
+					.style("fill", 'rgb(39, 48, 81)')
+					.text(function(d) {
+						return d.text;
+					});
+			};
+		});
+	};
+
+
+	// function resize() {
+		// // if (w === element.offsetWidth) {
+			// // return;
+		// // };
+
+		// // w = element.offsetWidth;
+		// // h = element.offsetHeight;
+		
+		// if (w === window.innerWidth /2 *.8) {
+			// return;
+		// };
+		
+	
+		// var w = window.innerWidth /2 *.8;//$(element).width();//element.offsetWidth;
+		// var h = 330;//$(element).width();//element.offsetWidth;		
+
+		// console.log(w, h);
+		
+		// render();
+	// };
+
+	function select(qElem) {
+		cube.selectHyperCubeValues('/qHyperCubeDef', 0, [qElem], true).then(function(success) {
+			pubsub.publish('update');
+		});
+	};
+
+	var update = pubsub.subscribe('update', render);
+	//var resizeEvent = pubsub.subscribe('resize', resize);
+	
+	pubsub.subscribe('kill', function() {
+		pubsub.unsubscribe(update);
+		//pubsub.unsubscribe(resizeEvent);
+	});
+};
+
+
+
+////// END OF FUNCTION WORDCLOUD ////////////
+
+
  
 function ContentTable(fieldlist, element) {
 	
