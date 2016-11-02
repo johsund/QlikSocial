@@ -311,7 +311,9 @@ function create(global) {
 		loadscript += appendFacebook();
 		//console.log(loadscript);		
 		//console.log(connectionReddit);
-	}		
+	}	
+	
+	loadscript += appendWordFilter();	
 	
 	if($("#buttonSentiment").attr('checked')) {
 		connectionSentiment = {
@@ -322,7 +324,7 @@ function create(global) {
 		loadscript += appendSentiment();
 	}
 	
-	loadscript += appendWordFilter();
+
 	
 	//if(sourceCounter>1) {
 		$(".container").fadeTo( "slow" , 0.5, function() {
@@ -783,7 +785,7 @@ function appendSentiment() {
 	sentimentLoadscript += "\r\nSet vLanguage = 'en';";
 	sentimentLoadscript += "\r\nLet startAt = 0;";
 	sentimentLoadscript += "\r\nLet vLoop = (NoOfRows('DataTable')-1) ;";
-	sentimentLoadscript += "\r\nSet vappid = 'jsn@qlik.com'; ";
+	sentimentLoadscript += "\r\nSet vappid = 'email@domain.com'; ";
 	sentimentLoadscript += "\r\n[Sentimentresults]:";
 	sentimentLoadscript += "\r\nLOAD 1 as dummy";
 	sentimentLoadscript += "\r\nautogenerate(1);";
@@ -815,7 +817,7 @@ function appendWordFilter() {
 	
 	var purgeChars = '#{}(&)@?[]\",.:;-=_';
 
-	var wordArray = ['de','has','are','the','be','to','of','and','a','in','that','have','i','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','people','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us', 'rt'];
+	var wordArray = ['hi','am','is','de','has','are','the','be','to','of','and','a','in','that','have','i','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','people','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us', 'rt'];
 	console.log(wordArray.length);
 	var appendWordFilterLoadscript="";
 	//appendWordFilterLoadscript += "\r\nLIB CONNECT TO '"+connectionSentiment.qName+"';";
@@ -845,7 +847,7 @@ function appendWordFilter() {
 	appendWordFilterLoadscript += "\r\nLoad Search_id, Keyword resident DummyTable1";
 	appendWordFilterLoadscript += "\r\nwhere not exists (Words, Keyword) and len(Keyword)>0;";
 	appendWordFilterLoadscript += "\r\nDrop table DummyTable1;";
-	appendWordFilterLoadscript += "\r\nDrop table WordDictionary;";
+	//appendWordFilterLoadscript += "\r\nDrop table WordDictionary;";
 
 	return appendWordFilterLoadscript;
 }

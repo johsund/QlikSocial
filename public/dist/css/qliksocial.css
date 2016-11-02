@@ -76,7 +76,7 @@ opacity: 1.0;
 	
 		border-collapse: separate;
 		font-size: 12px;
-		padding-top: 20px;
+		padding-top: 0px;
 		width: 100%;
 		-webkit-user-select:none;
 		-moz-user-select:none;
@@ -94,6 +94,7 @@ opacity: 1.0;
 		  text-align: left;
 		  font-size: 14px;	
 		  margin-bottom: 10px;
+		  height:35px;
 		}
 			
 		td {
@@ -154,7 +155,7 @@ opacity: 1.0;
 }
 
 #analyticsPane .heading {
-    padding: 15px 0 10px 15px;
+    padding: 30px 0 10px 15px;
 	color: #449d44;
     color: var(--main-color);
     font-size: 12px;

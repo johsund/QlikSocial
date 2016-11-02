@@ -3,6 +3,10 @@ require( ['jquery'], function ( $ ) {
 
 var qlikHost = 'sgsin-jsn1.qliktech.com';
 var qlikVirtualProxy = 'ticket';
+var mapQuestKey = 'MVMH03Pi6V9tgzmPAK2DnULUG1PGb5WT'; //Register as a mapQuest developer to get your own key (to avoid hitting the geocode limit)
+
+
+var pinColor = "449d44"; //Color for map markers
 
   var config = {
     host: qlikHost,
@@ -27,8 +31,6 @@ var getUrlParameter = function getUrlParameter(sParam) {
 };  
 
 window.onresize = refreshAllCharts;
-
-//$(document).ready(refreshAllCharts);
 
 function refreshAllCharts() {
 	console.log("Resizing all!");
@@ -194,7 +196,15 @@ global.getDocList().then(function(docList) {
 		var hashtag = new Filter('Search_first_hash_tag', 'Hash Tag', document.getElementById('filterPane'));
 		var datasource = new Filter('datasource', 'Web Source', document.getElementById('filterPane'));
 		var language = new Filter('Search_lang', 'Language', document.getElementById('filterPane'));
-		//var usergeo = new MapUsers('Search_user_location', 'User Location', 'count(distinct Search_id)', document.getElementById('chartseven'));
+		
+		if(mapQuestKey.length>10) {
+			var usergeo = new MapUsers('Search_user_location', 'User Location', 'count(distinct Search_id)', document.getElementById('charttwelve'));
+		}
+		else {
+			
+			$("#charttwelve").remove();
+		}
+		
 		
 		var contenttable = new ContentTable(['datasource', 'Search_user_name', 'Search_created_at_timestamp', 'Search_text', 'Search_user_screen_name', 'Search_id', 'Search_favorite_count', 'Search_retweet_count', 'Search_first_media_photo_url'], $('twitterFeed'));
  
@@ -437,7 +447,7 @@ function Table(dimensions, expression, element, sorting) {
 
 		columns.forEach(function(d, i) {
 			if (i == 1) {
-				$('<th colspan="2" class="col col' + (i + 1) + '">' + d + '</th>').appendTo($thead);
+				$('<th colspan="2" style="height:35px;" class="col col' + (i + 1) + '">' + d + '</th>').appendTo($thead);
 			} else {
 				$('<th class="col col' + (i + 1) + '">' + d + '</th>').appendTo($thead);
 			}
@@ -1220,7 +1230,7 @@ function WordCloud(dimension, expression, element) {
 
 	//console.log(w, h);
 	//console.log(window.innerWidth /2 *.8);
-	$('<div style="font-weight:bold;font-size:12px;">Most common words</div>').appendTo(element);
+	$('<div style="font-weight:bold;font-size:12px;padding-left:10px;padding-top:10px;">Most common words</div>').appendTo(element);
 	var svg = d3.select(element).append("svg").attr("id", "svgwordcloud");
 
 	var max,
@@ -1794,183 +1804,239 @@ function ContentTable(fieldlist, element) {
 
 }; //////// End of Function ContentTable 
  
-// function MapUsers(field, label, sortOrder, element, shouldsearch) { //Removing for now due to Google Map 10 geocode / sec limit
+function MapUsers(field, label, sortOrder, element, shouldsearch) { //Removing for now due to Google Map 10 geocode / sec limit
 
-// var map;
-// var marker;
+var qElemList=[];
+var qDataList=[];
+var map;
+var marker;
 
-	// //console.log("MapUsers fired");
-  // var list;
-  // var listId;
-  // var $el = element;
-  // var existsInDOM = false;
-  // var selectedState = false;
-  // var openState = false;
-  // var searchable = shouldsearch || false;
-  // var labeltrim = label.replace(/\s+/g, '').replace(/\./g, '');
+	//console.log("MapUsers fired");
+  var list;
+  var listId;
+  var $el = element;
+  var existsInDOM = false;
+  var selectedState = false;
+  var openState = false;
+  var searchable = shouldsearch || false;
+  var labeltrim = label.replace(/\s+/g, '').replace(/\./g, '');
 
 
-  // var sort = field == 'DateRange' ? {
-    // "qSortByNumeric": 1
-  // } : {
-    // "qSortByState": 1,
-    // "qSortByAscii": 0,
-	// "qSortByExpression": -1,
-	// "qExpression": sortOrder
-  // };
+  var sort = field == 'DateRange' ? {
+    "qSortByNumeric": 1
+  } : {
+    "qSortByState": 1,
+    "qSortByAscii": 0,
+	"qSortByExpression": -1,
+	"qExpression": sortOrder
+  };
 
-  // /**
-   // * Create the Qlik Sense Object
-   // * https://help.qlik.com/sense/2.0/en-us/developer/Subsystems/EngineAPI/Content/GenericObject/PropertyLevel/ListObjectDef.htm
-   // * 
-   // * Returns a promise which will call render once it's fulfilled.
-   // */
-  // app.createSessionObject({
-    // "qInfo": {
-      // "qId": "",
-      // "qType": "ListObject"
-    // },
-    // "qListObjectDef": {
-      // "qLibraryId": "",
-      // "qShowAlternatives": true,
-      // "qDef": {
-        // "qFieldDefs": [field],
-        // "qSortCriterias": [sort]
-      // },
-      // "qInitialDataFetch": [{
-        // "qTop": 0,
-        // "qHeight": 200,
-        // "qLeft": 0,
-        // "qWidth": 1
-      // }]
-    // }
-  // }).then(function(reply) {
-    // list = reply;
-	// //console.log(list);
-    // render();
-  // });
+  /**
+   * Create the Qlik Sense Object
+   * https://help.qlik.com/sense/2.0/en-us/developer/Subsystems/EngineAPI/Content/GenericObject/PropertyLevel/ListObjectDef.htm
+   * 
+   * Returns a promise which will call render once it's fulfilled.
+   */
+  app.createSessionObject({
+    "qInfo": {
+      "qId": "",
+      "qType": "ListObject"
+    },
+    "qListObjectDef": {
+      "qLibraryId": "",
+      "qShowAlternatives": true,
+      "qDef": {
+        "qFieldDefs": [field],
+        "qSortCriterias": [sort]
+      },
+      "qInitialDataFetch": [{
+        "qTop": 0,
+        "qHeight": 1000,
+        "qLeft": 0,
+        "qWidth": 1
+      }]
+    }
+  }).then(function(reply) {
+    list = reply;
+	//console.log(list);
+    render();
+  });
 
-  // function render() {
-    // /**
-     // * Get the layout/data of the List Object
-     // */
-    // list.getLayout().then(function(layout) {
-      // console.log(layout);
-      // listId = layout.qInfo.qId; 
+  function render() {
+    /**
+     * Get the layout/data of the List Object
+     */
+    list.getLayout().then(function(layout) {
+      //console.log(layout);
+      listId = layout.qInfo.qId; 
        
-// //google.maps.event.addDomListener(window, 'load', initialize); 	
+//google.maps.event.addDomListener(window, 'load', initialize); 	
       
-      // var items = layout.qListObject.qDataPages[0].qMatrix;
-      // //var selected = layout.qListObject.qDimensionInfo.qStateCounts.qSelected;
-		// //console.log(items);
-		// var map;
-		// var marker;
+      var items = layout.qListObject.qDataPages[0].qMatrix;
+      //var selected = layout.qListObject.qDimensionInfo.qStateCounts.qSelected;
+		//console.log(items);
+		var map;
+		var marker;
 
-		// //console.log($el);
+		//console.log($el);
+		// = layout.qListObject.qDataPages[0].qMatrix;
+		//console.log(itemsData);
 
-
-		// initialize();
-		// grabData(items);
+		initialize();
+		grabData(items);
 	  
-    // });
-  // };
+    });
+  };
   
-  // // function sleep(miliseconds) {
-	  // // console.log("Sleeping");
-   // // var currentTime = new Date().getTime();
+  // function sleep(miliseconds) {
+	  // console.log("Sleeping");
+   // var currentTime = new Date().getTime();
 
-   // // while (currentTime + miliseconds >= new Date().getTime()) {
-   // // }
-   // // //return;
-// // }
+   // while (currentTime + miliseconds >= new Date().getTime()) {
+   // }
+   // //return;
+// }
   
-  // function initialize() {
-	  // //console.log("Initialize");
-		// var mapOptions = {
-			// center: new google.maps.LatLng(40.680898,-8.684059),
-			// zoom: 1,
-			// mapTypeId: google.maps.MapTypeId.ROADMAP
-		// };
+  function initialize() {
+	  console.log("Initialize");
+		var mapOptions = {
+			center: new google.maps.LatLng(40.680898,-8.684059),
+			zoom: 2,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
 		
-		// map = new google.maps.Map($el, mapOptions);
-  // }
+		map = new google.maps.Map($el, mapOptions);
+  }
 
-  // function grabData(items) {
-	 // // console.log("GrabData");
-	 // //console.log(items);
-		// items.forEach(function(d) {
-			// if(d[0].qText != undefined) {
-				// //console.log(d[0].qText);
-				// searchAddress(d[0].qText);
-				// //userList += d[0.q]
-			// }
-		// });	  
-  // }
+  function grabData(items) {
+	  //console.log("GrabData");
+	 //console.log(items);
+		var locationCounter = 0;
+		var lookupArray = [];
+		var arrayHolder = [];
+		items.forEach(function(d, index) {
+			//itemsData.push()
+			//console.log(d);
+			qElemList.push(d[0].qElemNumber);
+			qDataList.push(d[0].qText);
+			//console.log(d);
+			if(d[0].qState=="O" || d[0].qState=="S") {
+				locationCounter +=1;
+				//console.log(d[0].qText, d[0].qState);
+				lookupArray.push(d[0].qText);
+				if(locationCounter % 50 == 0) {
+					arrayHolder.push(lookupArray);
+					lookupArray = [];
+				}
+				//console.log(index, items.length);
+
+			}		
+			if(index==items.length-1) {
+				arrayHolder.push(lookupArray);
+				searchAddress(arrayHolder);
+			}			
+
+		});	  
+  }
   
-	// function searchAddress(addressGeoCode) {
-		// //console.log("SEARCHADDRESS CALLLED");
-		// var addressInput = addressGeoCode;//= document.getElementById('address-input').value;
+	function searchAddress(addressGeoCode) {
+		//console.log("SEARCHADDRESS CALLLED");
+		//var addressInput = addressGeoCode;//= document.getElementById('address-input').value;
+		var searchQuery;
+		
+		//console.log(addressGeoCode);
+		
+		var connectionList = [];
+		
+		addressGeoCode.forEach(function(d, index) {
+			//console.log(d, index);
+			searchQuery = "";
+			//console.log(addressGeoCode[index]);
+			addressGeoCode[index].forEach(function(data) {
+				//console.log(data);
+				searchQuery += "location=" + data + "&";
+			});		
+			
+			connectionList.push(searchQuery);
+		
+		});
+		
+		//console.log(connectionList);
+		
+		connectionList.forEach(function(d) {
+			$.get('http://www.mapquestapi.com/geocoding/v1/batch?key='+ mapQuestKey +'&'+ d + 'maxResults=1', function(data) {
+				//console.log(data);
+				for (i = 0; i <=49; i++) { 
+				//console.log(data.results[i].locations[0]);
+					if(data.results[i].locations[0].latLng.lat != undefined && data.results[i].locations[0].latLng.lng != undefined) {
+						createMarker(data.results[i].locations[0].latLng.lat, data.results[i].locations[0].latLng.lng, data.results[i].providedLocation.location);
+					}
+				}
+				
+			});	
+		});
 
-		// //console.log(addressInput);
-		// var geocoder = new google.maps.Geocoder();
+		
 
-			// //FREE API CAPS AT 10 Requests per second
-		// geocoder.geocode({address: addressInput}, function(results, status) {
+	}
 
-			// if (status == google.maps.GeocoderStatus.OK) {
-
-				  // var myResult = results[0].geometry.location;
-				  
-				  // //console.log(myResult.lat());
-				  // createMarker(myResult, addressGeoCode);
-
-				  // //map.setCenter(myResult);
-
-				  // //map.setZoom(17);
-			// }
-		// });
-
-	// }
-
-	// function createMarker(latlng, addressGeoCode) {
-	// //console.log("TRIGGERED CERATEMARKET");
-	  // // if(marker != undefined && marker != ''){
-		  // // console.log("undefined marker");
-		// // marker.setMap(null);
-		// // marker = '';
-	  // // }
+	function createMarker(latitude,longitude, addressGeoCode) {
+	//console.log("TRIGGERED CERATEMARKER");
 
 
-	  // marker = new google.maps.Marker({
-		// map: map,
-		// position: latlng,
-		// title: addressGeoCode
-	  // });
-	// }	  
+		//console.log(latitude, longitude, addressGeoCode);
+		var arrayPos = jQuery.inArray( addressGeoCode, qDataList );
 
-  // /**
-   // * Select a value in the Qlik Sense Data Model.
-   // * Will trigger a update message to notify other objects to update accordingly.
-   // */
-  // function select(qElem) {
-    // list.selectListObjectValues("/qListObjectDef", [+qElem], field == 'DateRange' ? false : true, false).then(function(success) {
-      // $('#clearfilter').addClass('active');
-      // pubsub.publish('update');
-    // }, function(error) {
-      // console.log(error);
-    // });
-  // }
 
-  // /**
-   // * Listen for messages and delegate actions.
-   // */
-  // var update = pubsub.subscribe('update', render);
-  // pubsub.subscribe('kill', function() {
-    // app.destroySessionObject(listId);
-    // pubsub.unsubscribe(update);
-  // });
+
+    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0,0),
+        new google.maps.Point(10, 34));		
+		
+		
+	  marker = new google.maps.Marker({
+		map: map,
+		position: {lat: latitude, lng: longitude},
+		icon: pinImage,
+		title: addressGeoCode,
+		qElem: qElemList[jQuery.inArray( addressGeoCode, qDataList )]
+	  });
+	  
+	  google.maps.event.addListener(marker, 'click', function(value) {
+		  //console.log(this);
+		  select(this.qElem);
+		 //select() 
+		//console.log(marker.title);
+		 //console.log(jQuery.inArray( marker.title, qDataList ));
+		// console.log(qDataList);
+		 //console.log("clicked");
+	  });
+	}	  
+
+  /**
+   * Select a value in the Qlik Sense Data Model.
+   * Will trigger a update message to notify other objects to update accordingly.
+   */
+  function select(qElem) {
+    list.selectListObjectValues("/qListObjectDef", [+qElem], true).then(function(success) {
+      //$('#clearfilter').addClass('active');
+      pubsub.publish('update');
+    }, function(error) {
+      console.log(error);
+    });
+  }
+
+  /**
+   * Listen for messages and delegate actions.
+   */
+  var update = pubsub.subscribe('update', render);
+  pubsub.subscribe('kill', function() {
+    app.destroySessionObject(listId);
+    pubsub.unsubscribe(update);
+  });
   
-// }; //////// end of function MapUsers 
+}; //////// end of function MapUsers 
  
  //////////// end of function app
  })
