@@ -5,15 +5,7 @@ var qlikHost = 'sgsin-jsn1.qliktech.com';
 var qlikVirtualProxy = 'ticket';
 var mapQuestKey = 'MVMH03Pi6V9tgzmPAK2DnULUG1PGb5WT'; //Register as a mapQuest developer to get your own key (to avoid hitting the geocode limit)
 
-
 var pinColor = "449d44"; //Color for map markers
-
-  var config = {
-    host: qlikHost,
-	prefix: qlikVirtualProxy,
-	rejectUnauthorized: false,
-    isSecure: true
-  };
 
 var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -29,6 +21,19 @@ var getUrlParameter = function getUrlParameter(sParam) {
         }
     }
 };  
+
+
+  var config = {
+    host: qlikHost,
+	prefix: qlikVirtualProxy,
+	rejectUnauthorized: false,
+    isSecure: true,
+	appname: getUrlParameter('app')
+  };
+
+  console.log(config);
+  
+
 
 window.onresize = refreshAllCharts;
 
@@ -47,7 +52,7 @@ global.getDocList().then(function(docList) {
 			}
 		});
 });
-  //Open document Sales Discovery
+  //Open document
   global.openDoc(getUrlParameter('app')).then(function(app) {
 
 	
