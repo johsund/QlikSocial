@@ -84,7 +84,7 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
   * Go to __http://localhost:3000__
   * Do note that in order for Facebook to work you need to use __http://localhost:3000__ to access. This is because Facebook has a callback function after authenticating/checking user credentials so it will send the access token back to this location. If you use http://hostname:3000 the facebook token will not return properly and you'll be unable to include Facebook data in the search.
   
-![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialStart.png)
+![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/qlikSocialStart2.png)
 
   * When clicking the Facebook checkbox for the first time- you will be prompted via a popup to authenticate with Facebook. Ensure the popup is not blocked by an ad-blocker.
   
