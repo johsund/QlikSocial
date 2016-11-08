@@ -1,10 +1,13 @@
 # QlikSocial
 
+UPDATE: Added support for Sentiment Analysis - 11/7/2016
 UPDATE: Added support for Facebook - 10/17/2016
 
 QlikSocial helps you create on demand analytics applications based on social media sources. The data is visualized and searchable to help sift through the comments and understand what is being said around a specific topic. QlikSocial allows you to take and store snapshots in time of topics and keep these apps for future access, for example around events, product launches etc.
 
 QlikSocial is developed using Qlik Sense 3.0 and leveraging the Engine API with custom data visualizations.
+
+![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/Gif2.gif)
 
 QlikSocial should be used with __Qlik Sense Enterprise Server only__, i.e. no Qlik Sense Desktop.
 
@@ -87,6 +90,8 @@ https://www.youtube.com/watch?v=33XhaIwRrhI
   * The facebook page search is __optional__. If you just use the normal QlikSocial search, the first hit from Facebook will be returned. For example, you might search for __apple__ and the first Facebook page is a page with lots of posts around apples, the fruit. In reality you were looking for __apple__ the software company. Use the search in the Facebook box to ensure you're looking for the correct topic when searching in QlikSocial.
   
 ![alt tag](https://raw.githubusercontent.com/johsund/QlikSocial/master/images/configureFBsearch.png)  
+
+  * The Sentiment Analysis search uses Sentiment140. It will be quite slow and will occasionally time out which leads to an incomplete app. If you do have problems creating apps - try NOT using sentiment analysis.
   
 ## Extra options
   * You have the option to change the color scheme from the standard QlikSocial green.
