@@ -1,6 +1,7 @@
 # QlikSocial
 
 UPDATE: Added support for Sentiment Analysis - 11/7/2016
+
 UPDATE: Added support for Facebook - 10/17/2016
 
 QlikSocial helps you create on demand analytics applications based on social media sources. The data is visualized and searchable to help sift through the comments and understand what is being said around a specific topic. QlikSocial allows you to take and store snapshots in time of topics and keep these apps for future access, for example around events, product launches etc.
